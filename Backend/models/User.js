@@ -40,10 +40,20 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING,
         defaultValue: 'user',  // Le rôle par défaut est 'user'
     },
-    
+    // Nouveau champ pour stocker l'OTP
+    OTP: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    // Nouveau champ pour stocker la date d'expiration de l'OTP
+    OTP_expiration: {
+        type: DataTypes.DATE,
+        allowNull: true,
+    },
 }, {
     tableName: 'utilisateur',
     timestamps: false,
 });
 
 module.exports = User;
+

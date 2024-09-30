@@ -1,11 +1,11 @@
 const express = require('express');
-const { isAuthenticated } = require('../middleware/authMiddleware');
+const { isAuthenticated, isOTPVerified } = require('../middleware/authMiddleware'); // Import both middlewares
 const User = require('../models/User');
 
 const router = express.Router();
 
-// Route GET pour récupérer les informations de l'utilisateur connecté
-router.get('/user', isAuthenticated, async (req, res) => {
+// Route GET pour récupérer les informations de l'utilisateur connecté (protégée par authentification + vérification OTP)
+router.get('/user', isAuthenticated, isOTPVerified, async (req, res) => {
     try {
         const user = await User.findByPk(req.user.id);  // Récupérer l'utilisateur connecté via l'ID stocké dans le token
         if (!user) {

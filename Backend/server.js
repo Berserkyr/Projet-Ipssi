@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
@@ -10,97 +11,177 @@ const fs = require('fs'); // Pour la gestion des fichiers (suppression)
 const File = require('./models/File');
 const userRoutes = require('./routes/userRoutes');  // Chemin vers ton fichier userRoutes.js
 const bodyParser = require('body-parser');
-const { isAuthenticated, isAdmin } = require('./middleware/authMiddleware');
-
-
-
-
-
-
-
-// Importer le middleware de vérification du token
-const verifyToken = require('./middleware/verifyToken');
+const { verifyToken, isAuthenticated, isAdmin, isOTPVerified } = require('./middleware/authMiddleware'); // Ensure this line includes verifyTokenconst nodemailer = require('nodemailer'); 
+const nodemailer = require('nodemailer');
 
 const app = express();
-app.use(express.json()); // Middleware pour gérer les requêtes avec du JSON
 
-// Configuration CORS (autorisation de toutes les origines)
-app.use(cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true
-}));
+app.use(express.json());
+
+// Nodemailer setup
+const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    secure: false,  // true for 465, false for other ports
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD
+    },
+    tls: {
+        rejectUnauthorized: false  // Add this if you're getting TLS errors
+    }
+});
 
 // Middleware pour rendre le dossier des fichiers accessible publiquement
 app.use('/uploads', express.static('uploads'));
 
 // Synchroniser Sequelize avec la base de données
 sequelize.sync({ alter: true })
-.then(() => console.log('Base de données synchronisée avec Sequelize.'))
-.catch(err => console.error('Erreur lors de la synchronisation de la base de données:', err));
+    .then(() => console.log('Base de données synchronisée avec Sequelize.'))
+    .catch(err => console.error('Erreur lors de la synchronisation de la base de données:', err));
 app.use('/api', userRoutes);
+
 // ----------------------------
 // ROUTES D'INSCRIPTION ET CONNEXION
 // ----------------------------
 
+function generateOTP() {
+    return Math.floor(100000 + Math.random() * 900000).toString(); // Generates a 6-digit OTP
+}
+
 // Route pour gérer l'inscription
 app.post('/api/register', async (req, res) => {
-    const { email, password, firstName, lastName, address } = req.body;
-    
-    if (!email || !password || !firstName || !lastName || !address) {
+    const { Nom, Prenom, Email, Mot_de_passe, Adresse, Ville } = req.body;
+
+    if (!Nom || !Prenom || !Email || !Mot_de_passe) { // Adjusted the validation
         return res.status(400).json({ message: 'Veuillez fournir toutes les informations requises.' });
     }
-    
+
     try {
-        const userExists = await User.findOne({ where: { Email: email } });
-        if (userExists) {
-            return res.status(400).json({ message: 'Utilisateur déjà inscrit' });
-        }
-        
-        const hashedPassword = bcrypt.hashSync(password, 10);
-        const newUser = await User.create({
-            Nom: firstName,
-            Prenom: lastName,
-            Email: email,
+        const hashedPassword = await bcrypt.hash(Mot_de_passe, 10);
+        const user = await User.create({
+            Nom,
+            Prenom,
+            Email,
             Mot_de_passe: hashedPassword,
-            Adresse: address
+            Adresse,
+            Ville,
         });
-        
-        return res.status(201).json({ message: 'Inscription réussie, vous pouvez vous connecter.' });
+
+        // Generate OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Generate a 6-digit OTP
+        user.OTP = otp;
+        user.OTP_expiration = new Date(Date.now() + 10 * 60000); // OTP valid for 10 minutes
+        await user.save();
+
+        // Send OTP via email
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: Email,
+            subject: 'Your OTP Code',
+            text: `Your OTP code is ${otp}. It is valid for 10 minutes.`,
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Error sending OTP email:', error);
+                return res.status(500).json({ message: 'Error sending OTP email.' });
+            }
+            console.log('Email sent: ' + info.response);
+            return res.status(201).json({ message: 'User registered successfully. OTP sent to email.' });
+        });
     } catch (error) {
-        return res.status(500).json({ message: 'Erreur serveur lors de l\'inscription.' });
+        console.error('Erreur lors de la création de l\'utilisateur:', error);
+        return res.status(500).json({ message: 'Erreur serveur lors de la création de l\'utilisateur.' });
     }
 });
+
+
+// Route pour vérifier l'OTP
+app.post('/api/verify-otp', async (req, res) => {
+    const { email, otp } = req.body;
+
+    // Log incoming request body
+    console.log('Received email:', email);
+    console.log('Received OTP:', otp);
+
+    if (!email || !otp) {
+        return res.status(400).json({ message: 'Veuillez fournir l\'email et l\'OTP.' });
+    }
+
+    try {
+        const user = await User.findOne({ where: { Email: email } });
+        if (!user) {
+            return res.status(404).json({ message: 'Utilisateur non trouvé' });
+        }
+
+        // Vérifier si l'OTP est valide
+        if (user.OTP !== otp) {
+            return res.status(401).json({ message: 'OTP incorrect' });
+        }
+
+        // Vérifier si l'OTP a expiré
+        if (user.OTP_expiration < new Date()) {
+            return res.status(401).json({ message: 'OTP expiré, veuillez vous réinscrire.' });
+        }
+
+        // Réinitialiser l'OTP et l'expiration
+        user.OTP = null;
+        user.OTP_expiration = null;
+        await user.save();
+
+        return res.json({ message: 'OTP vérifié avec succès. Vous pouvez maintenant vous connecter.' });
+    } catch (error) {
+        console.error('Erreur lors de la vérification de l\'OTP:', error);
+        return res.status(500).json({ message: 'Erreur serveur lors de la vérification de l\'OTP.' });
+    }
+});
+
+
+
 
 // Route pour gérer la connexion
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
     
     try {
-        const user = await User.findOne({ where: { Email: email } });
+        const user = await User.findOne({ 
+            where: { 
+                [Op.or]: [
+                    { Email: email },
+                ]
+            }
+        });
+
         if (!user) {
             return res.status(404).json({ message: 'Utilisateur non trouvé' });
         }
-        
+
         const isPasswordValid = bcrypt.compareSync(password, user.Mot_de_passe);
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Mot de passe incorrect' });
         }
-        
-        const token = jwt.sign(
-            { id: user.ID_Utilisateur, email: user.Email, role: user.role },  // Inclure le rôle ici
-            'secret',  // Remplacez par votre clé secrète
-            { expiresIn: '1h' }
-        );
-        
+
+        // Generate OTP and set expiration
+        const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Generates a 6-digit OTP
+        const expirationTime = new Date();
+        expirationTime.setMinutes(expirationTime.getMinutes() + 10); // OTP expires in 10 minutes
+
+        // Save OTP and expiration to the user
+        user.OTP = otp;
+        user.OTP_expiration = expirationTime;
+        await user.save();
+
         return res.json({
-            message: 'Connexion réussie',
-            token
+            message: 'Connexion réussie. Un OTP a été envoyé à votre email.',
+            userId: user.ID_Utilisateur, // You might want to return userId for further verification
         });
     } catch (error) {
         return res.status(500).json({ message: 'Erreur serveur lors de la connexion.' });
     }
 });
+
+
 
 
 // ----------------------------
@@ -298,5 +379,3 @@ const PORT = 5000;
 app.listen(PORT, () => {
     console.log(`Serveur backend démarré sur le port ${PORT}`);
 });
-
-
