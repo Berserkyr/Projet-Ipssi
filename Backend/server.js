@@ -49,6 +49,26 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 }));
+const { isAuthenticated, isAdmin } = require('./middleware/authMiddleware');
+
+
+
+
+
+
+
+// Importer le middleware de vérification du token
+const verifyToken = require('./middleware/verifyToken');
+
+const app = express();
+app.use(express.json()); // Middleware pour gérer les requêtes avec du JSON
+
+// Configuration CORS (autorisation de toutes les origines)
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+}));
 
 // Middleware pour rendre le dossier des fichiers accessible publiquement
 app.use('/uploads', express.static('uploads'));
@@ -62,44 +82,34 @@ app.use('/api', userRoutes);
 // ROUTES D'INSCRIPTION ET CONNEXION
 // ----------------------------
 
-// Route pour gérer l'inscription et rediriger vers PayPal
-
+// Route pour gérer l'inscription
 app.post('/api/register', async (req, res) => {
     const { email, password, firstName, lastName, address } = req.body;
-
+    
+    if (!email || !password || !firstName || !lastName || !address) {
+        return res.status(400).json({ message: 'Veuillez fournir toutes les informations requises.' });
+    }
+    
     try {
-        // Vérifier si l'utilisateur existe déjà
         const userExists = await User.findOne({ where: { Email: email } });
         if (userExists) {
-            return res.status(400).json({ message: 'Utilisateur déjà inscrit.' });
+            return res.status(400).json({ message: 'Utilisateur déjà inscrit' });
         }
-
-        // Hasher le mot de passe
+        
         const hashedPassword = bcrypt.hashSync(password, 10);
-
-        // Créer un nouvel utilisateur avec 20 Go de stockage
         const newUser = await User.create({
             Nom: firstName,
             Prenom: lastName,
             Email: email,
             Mot_de_passe: hashedPassword,
-            Adresse: address,
-            Capacite_stockage: 20  // Ajouter 20 Go de stockage à l'inscription
+            Adresse: address
         });
-
-        // Répondre avec un message de succès et les informations de l'utilisateur
-        res.status(201).json({
-            message: 'Inscription réussie avec 20 Go de stockage ajoutés.',
-            user: newUser
-        });
-
+        
+        return res.status(201).json({ message: 'Inscription réussie, vous pouvez vous connecter.' });
     } catch (error) {
-        console.error('Erreur lors de l\'inscription :', error);
-        res.status(500).json({ message: 'Erreur lors de l\'inscription.' });
+        return res.status(500).json({ message: 'Erreur serveur lors de l\'inscription.' });
     }
 });
-
-
 
 // Route pour gérer la connexion
 app.post('/api/login', async (req, res) => {
