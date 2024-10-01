@@ -38,28 +38,6 @@ const transporter = nodemailer.createTransport({
 
 // Importer le middleware de vérification du token
 const verifyToken = require('./middleware/verifyToken');
-
-const app = express();
-app.use(express.json()); // Middleware pour gérer les requêtes avec du JSON
-
-// Configuration CORS (autorisation de toutes les origines)
-app.use(cors({
-    origin: '*', 
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
-}));
-const { isAuthenticated, isAdmin } = require('./middleware/authMiddleware');
-
-
-
-
-
-
-
-// Importer le middleware de vérification du token
-const verifyToken = require('./middleware/verifyToken');
-
 const app = express();
 app.use(express.json()); // Middleware pour gérer les requêtes avec du JSON
 
