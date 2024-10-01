@@ -13,10 +13,18 @@ const userRoutes = require('./routes/userRoutes');  // Chemin vers ton fichier u
 const bodyParser = require('body-parser');
 const { verifyToken, isAuthenticated, isAdmin, isOTPVerified } = require('./middleware/authMiddleware'); // Ensure this line includes verifyTokenconst nodemailer = require('nodemailer'); 
 const nodemailer = require('nodemailer');
-
+const { Op } = require('sequelize');
 const app = express();
 
+const corsOptions = {
+    origin: 'http://localhost:3000', // Replace this with your frontend URL
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true, // This is important if your frontend is making requests with credentials (like cookies)
+};
+
 app.use(express.json());
+
+app.use(cors(corsOptions));
 
 // Nodemailer setup
 const transporter = nodemailer.createTransport({
@@ -51,50 +59,65 @@ function generateOTP() {
 
 // Route pour gérer l'inscription
 app.post('/api/register', async (req, res) => {
-    const { Nom, Prenom, Email, Mot_de_passe, Adresse, Ville } = req.body;
-
-    if (!Nom || !Prenom || !Email || !Mot_de_passe) { // Adjusted the validation
-        return res.status(400).json({ message: 'Veuillez fournir toutes les informations requises.' });
-    }
-
+    const { firstName, lastName, address, email, password } = req.body;
+    
     try {
-        const hashedPassword = await bcrypt.hash(Mot_de_passe, 10);
-        const user = await User.create({
-            Nom,
-            Prenom,
-            Email,
-            Mot_de_passe: hashedPassword,
-            Adresse,
-            Ville,
+        // Hash the password before saving
+        const hashedPassword = bcrypt.hashSync(password, 10);
+        
+        const newUser = await User.create({
+            FirstName: firstName,
+            LastName: lastName,
+            Address: address,
+            Email: email,
+            Mot_de_passe: hashedPassword // Save the hashed password
         });
-
-        // Generate OTP
-        const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Generate a 6-digit OTP
-        user.OTP = otp;
-        user.OTP_expiration = new Date(Date.now() + 10 * 60000); // OTP valid for 10 minutes
-        await user.save();
-
-        // Send OTP via email
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: Email,
-            subject: 'Your OTP Code',
-            text: `Your OTP code is ${otp}. It is valid for 10 minutes.`,
-        };
-
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error('Error sending OTP email:', error);
-                return res.status(500).json({ message: 'Error sending OTP email.' });
-            }
-            console.log('Email sent: ' + info.response);
-            return res.status(201).json({ message: 'User registered successfully. OTP sent to email.' });
-        });
+        
+        return res.status(201).json({ message: 'Utilisateur créé avec succès', userId: newUser.ID_Utilisateur });
     } catch (error) {
-        console.error('Erreur lors de la création de l\'utilisateur:', error);
-        return res.status(500).json({ message: 'Erreur serveur lors de la création de l\'utilisateur.' });
+        return res.status(500).json({ message: 'Erreur lors de la création de l\'utilisateur.' });
     }
 });
+
+app.post('/api/login', async (req, res) => {
+    const { email, password } = req.body;
+    
+    try {
+        const user = await User.findOne({ 
+            where: { 
+                Email: email
+            }
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: 'Utilisateur non trouvé' });
+        }
+
+        const isPasswordValid = bcrypt.compareSync(password, user.Mot_de_passe);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: 'Mot de passe incorrect' });
+        }
+
+        // Generate OTP and set expiration
+        const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Generates a 6-digit OTP
+        const expirationTime = new Date();
+        expirationTime.setMinutes(expirationTime.getMinutes() + 10); // OTP expires in 10 minutes
+
+        // Save OTP and expiration to the user
+        user.OTP = otp;
+        user.OTP_expiration = expirationTime;
+        await user.save();
+
+        return res.json({
+            message: 'Connexion réussie. Un OTP a été envoyé à votre email.',
+            userId: user.ID_Utilisateur, // You might want to return userId for further verification
+        });
+    } catch (error) {
+        console.error('Login error:', error); // Log error for debugging
+        return res.status(500).json({ message: 'Erreur serveur lors de la connexion.' });
+    }
+});
+
 
 
 // Route pour vérifier l'OTP
@@ -136,53 +159,6 @@ app.post('/api/verify-otp', async (req, res) => {
         return res.status(500).json({ message: 'Erreur serveur lors de la vérification de l\'OTP.' });
     }
 });
-
-
-
-
-// Route pour gérer la connexion
-app.post('/api/login', async (req, res) => {
-    const { email, password } = req.body;
-    
-    try {
-        const user = await User.findOne({ 
-            where: { 
-                [Op.or]: [
-                    { Email: email },
-                ]
-            }
-        });
-
-        if (!user) {
-            return res.status(404).json({ message: 'Utilisateur non trouvé' });
-        }
-
-        const isPasswordValid = bcrypt.compareSync(password, user.Mot_de_passe);
-        if (!isPasswordValid) {
-            return res.status(401).json({ message: 'Mot de passe incorrect' });
-        }
-
-        // Generate OTP and set expiration
-        const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Generates a 6-digit OTP
-        const expirationTime = new Date();
-        expirationTime.setMinutes(expirationTime.getMinutes() + 10); // OTP expires in 10 minutes
-
-        // Save OTP and expiration to the user
-        user.OTP = otp;
-        user.OTP_expiration = expirationTime;
-        await user.save();
-
-        return res.json({
-            message: 'Connexion réussie. Un OTP a été envoyé à votre email.',
-            userId: user.ID_Utilisateur, // You might want to return userId for further verification
-        });
-    } catch (error) {
-        return res.status(500).json({ message: 'Erreur serveur lors de la connexion.' });
-    }
-});
-
-
-
 
 // ----------------------------
 // ROUTES DE GESTION DES FICHIERS

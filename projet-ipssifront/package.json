@@ -7,6 +7,7 @@
     "@stripe/stripe-js": "^4.5.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.7",
+    "cors": "^2.8.5",
     "i18next": "^23.15.1",
     "jspdf": "^2.5.2",
     "jspdf-autotable": "^3.8.3",

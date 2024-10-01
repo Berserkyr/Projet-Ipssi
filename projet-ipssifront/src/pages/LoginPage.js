@@ -5,17 +5,19 @@ import '../assets/css/AuthPage.css';
 
 const LoginPage = ({ setIsAuthenticated, onLogin }) => {  
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [password, setPassword] = useState(''); 
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log('Email:', email); 
+        console.log('Password:', password); // Debug à l'ancienne mon pote eh ouais
         try {
             const response = await axios.post('http://localhost:5000/api/login', {
-                email,
-                password
+                Email: email,  
+                Mot_de_passe: password 
             });
             console.log('Réponse du serveur:', response); // Log de la réponse du serveur
     
@@ -23,24 +25,11 @@ const LoginPage = ({ setIsAuthenticated, onLogin }) => {
             if (token) {
                 localStorage.setItem('token', token);
                 console.log('Token stocké dans le localStorage:', token);  // Log pour vérifier le stockage du token
-
-                // Décoder le payload du token JWT pour obtenir le rôle de l'utilisateur
-                const decodedToken = JSON.parse(atob(token.split('.')[1]));
-                const userRole = decodedToken.role;  // Extraction du rôle
-                
-                console.log('Rôle de l\'utilisateur:', userRole);  // Log pour vérifier le rôle extrait
-
-                setSuccess('Connexion réussie !');
+    
+                // OTP step
+                setSuccess('Connexion réussie ! Veuillez vérifier votre OTP.');
                 setError('');
-                setIsAuthenticated(true);
-                onLogin();  // Mettre à jour l'état de l'authentification
-
-                // Rediriger en fonction du rôle de l'utilisateur
-                if (userRole === 'admin') {
-                    navigate('/admin/dashboard');
-                } else {
-                    navigate('/user/dashboard');
-                }
+                navigate('/verify-otp', { state: { email } });
             } else {
                 setError('Erreur de connexion');
             }
@@ -49,6 +38,8 @@ const LoginPage = ({ setIsAuthenticated, onLogin }) => {
             console.error('Erreur:', err.response ? err.response.data : err.message);  // Log plus détaillé de l'erreur
         }
     };
+    
+    
 
     return (
         <div className="auth-page">
@@ -67,7 +58,7 @@ const LoginPage = ({ setIsAuthenticated, onLogin }) => {
                     <label>Mot de passe :</label>
                     <input
                         type="password"
-                        value={password}
+                        value={password} 
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />

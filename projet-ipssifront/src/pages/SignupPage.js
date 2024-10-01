@@ -1,28 +1,36 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';  // Utiliser useNavigate pour rediriger après l'inscription
+import { useNavigate } from 'react-router-dom';
 
 const SignupPage = () => {
-    const [firstName, setFirstName] = useState('');  // Ajouter l'état pour firstName
-    const [lastName, setLastName] = useState('');    // Ajouter l'état pour lastName
-    const [address, setAddress] = useState('');      // Ajouter l'état pour address
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [Prenom, setPrenom] = useState('');  
+    const [Nom, setNom] = useState('');        
+    const [Adresse, setAdresse] = useState(''); 
+    const [Email, setEmail] = useState('');
+    const [Mot_de_passe, setMot_de_passe] = useState(''); 
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log({
+            Prenom,
+            Nom,
+            Adresse,
+            Email,
+            Mot_de_passe
+        });  
+    
         try {
             const response = await axios.post('http://localhost:5000/api/register', { 
-                firstName, 
-                lastName, 
-                address, 
-                email, 
-                password 
+                Prenom, 
+                Nom, 
+                Adresse, 
+                Email, 
+                Mot_de_passe 
             });
-
+    
             // Vérifier le statut de la réponse
             if (response.status === 201) {  // Si le statut est 201 (inscription réussie)
                 setSuccess('Inscription réussie, vous pouvez vous connecter.');
@@ -33,10 +41,14 @@ const SignupPage = () => {
                 setError('Erreur lors de l\'inscription.');
             }
         } catch (err) {
-            setError(err.response?.data?.message || 'Erreur lors de l\'inscription.');
+            // Use a more detailed error message
+            const errorMessage = err.response?.data?.message || err.message || 'Erreur lors de l\'inscription.';
+            console.log(errorMessage);  
+            setError(errorMessage);
             setSuccess('');
         }
     };
+    
 
     return (
         <div className="auth-page">
@@ -46,8 +58,8 @@ const SignupPage = () => {
                     <label>Prénom :</label>
                     <input 
                         type="text" 
-                        value={firstName} 
-                        onChange={(e) => setFirstName(e.target.value)} 
+                        value={Prenom} 
+                        onChange={(e) => setPrenom(e.target.value)} 
                         required 
                     />
                 </div>
@@ -55,8 +67,8 @@ const SignupPage = () => {
                     <label>Nom :</label>
                     <input 
                         type="text" 
-                        value={lastName} 
-                        onChange={(e) => setLastName(e.target.value)} 
+                        value={Nom} 
+                        onChange={(e) => setNom(e.target.value)} 
                         required 
                     />
                 </div>
@@ -64,8 +76,8 @@ const SignupPage = () => {
                     <label>Adresse :</label>
                     <input 
                         type="text" 
-                        value={address} 
-                        onChange={(e) => setAddress(e.target.value)} 
+                        value={Adresse} 
+                        onChange={(e) => setAdresse(e.target.value)} 
                         required 
                     />
                 </div>
@@ -73,7 +85,7 @@ const SignupPage = () => {
                     <label>Email :</label>
                     <input 
                         type="email" 
-                        value={email} 
+                        value={Email} 
                         onChange={(e) => setEmail(e.target.value)} 
                         required 
                     />
@@ -82,8 +94,8 @@ const SignupPage = () => {
                     <label>Mot de passe :</label>
                     <input 
                         type="password" 
-                        value={password} 
-                        onChange={(e) => setPassword(e.target.value)} 
+                        value={Mot_de_passe} 
+                        onChange={(e) => setMot_de_passe(e.target.value)} 
                         required 
                     />
                 </div>
