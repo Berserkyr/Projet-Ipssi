@@ -386,14 +386,24 @@ app.get('/api/success', async (req, res) => {
                     siret: user.siret || null,             
                     vatNumber: user.vatNumber || null      
                 });
-
-                res.json({ message: 'Paiement validé. 20 Go ont été ajoutés à votre compte.' });
+    
+                // Fermer l'onglet avec un script JS
+                res.send(`
+                    <html>
+                        <body>
+                            <script>
+                                window.close();
+                            </script>
+                            <p>Paiement validé. L'onglet va se fermer automatiquement.</p>
+                        </body>
+                    </html>
+                `);
             } catch (err) {
                 console.error('Erreur lors de la mise à jour de l\'utilisateur ou de la création de la facture :', err);
                 res.status(500).json({ message: 'Erreur lors de la mise à jour ou de la création de la facture.' });
             }
         }
-    });
+    });    
 });
 
 
