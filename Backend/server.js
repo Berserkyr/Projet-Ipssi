@@ -13,7 +13,7 @@ const paypal = require('paypal-rest-sdk');
 const nodemailer = require('nodemailer');
 const { User, Invoice } = require('./models');
 const File = require('./models/File');
-
+require('dotenv').config();
 
 // Importer les routes
 const userRoutes = require('./routes/userRoutes');  // Chemin vers les routes utilisateur
