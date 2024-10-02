@@ -11,18 +11,21 @@ import SettingsPage from './pages/SettingsPage';  // Import de la page des param
 import AdminPage from './pages/AdminPage';  // Import de la page administrateur
 
 const App = () => {
+    // État pour suivre l'authentification de l'utilisateur
     const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
+    // État pour suivre le rôle de l'utilisateur (utilisateur standard ou administrateur)
     const [userRole, setUserRole] = useState(localStorage.getItem('role'));
 
     // Fonction pour gérer la déconnexion
     const handleLogout = () => {
-        localStorage.removeItem('token');  // Supprimer le token
-        localStorage.removeItem('role');   // Supprimer le rôle
+        localStorage.removeItem('token');  // Supprimer le token d'authentification du localStorage
+        localStorage.removeItem('role');   // Supprimer le rôle de l'utilisateur du localStorage
         setIsAuthenticated(false);  // Mettre à jour l'état d'authentification
-        setUserRole(null);  // Supprimer le rôle
+        setUserRole(null);  // Réinitialiser le rôle de l'utilisateur
         window.location.href = '/login';  // Rediriger vers la page de connexion
     };
 
+    // Utilisation de useEffect pour vérifier l'authentification à chaque chargement de composant
     useEffect(() => {
         const token = localStorage.getItem('token');
         const role = localStorage.getItem('role');
