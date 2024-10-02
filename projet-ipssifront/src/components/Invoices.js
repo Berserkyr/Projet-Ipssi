@@ -3,10 +3,11 @@ import axios from 'axios';
 import '../assets/css/Invoices.css'; // Assurez-vous que le fichier CSS est bien importé
 
 const Invoices = () => {
-    // États pour gérer les factures, le chargement, et les erreurs
+    // États pour gérer les factures, le chargement, les erreurs et le succès
     const [invoices, setInvoices] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [successMessage, setSuccessMessage] = useState(''); // Nouveau état pour le message de succès
 
     // Utiliser useEffect pour récupérer les factures une seule fois au chargement du composant
     useEffect(() => {
@@ -64,6 +65,15 @@ const Invoices = () => {
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link); // Nettoyage du DOM
+
+            // Afficher un message de succès après le téléchargement
+            setSuccessMessage('Facture téléchargée avec succès !');
+            
+            // Masquer le message de succès après 5 secondes
+            setTimeout(() => {
+                setSuccessMessage('');
+            }, 5000);
+
         } catch (err) {
             console.error('Erreur lors du téléchargement de la facture', err);
             alert('Erreur lors du téléchargement de la facture.');
@@ -84,6 +94,7 @@ const Invoices = () => {
     return (
         <div>
             <h2>Vos Factures</h2>
+            {successMessage && <p className="success-message">{successMessage}</p>} {/* Affichage du message de succès */}
             <ul>
                 {invoices.length === 0 ? (
                     <p>Aucune facture disponible.</p>
@@ -99,8 +110,6 @@ const Invoices = () => {
                             </li>
                         );
                     })
-                    
-                    
                 )}
             </ul>
         </div>
