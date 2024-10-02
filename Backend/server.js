@@ -416,7 +416,8 @@ app.get('/api/user-invoices', isAuthenticated, async (req, res) => {
         const user = await User.findByPk(userId, {
             include: [{
                 model: Invoice,
-                as: 'invoices',  
+                as: 'invoices',
+                attributes: ['id', 'clientName', 'purchaseDate', 'amount', 'description', 'status', 'companyName', 'siret', 'vatNumber']  
             }]
         });
 
@@ -478,8 +479,11 @@ app.get('/api/storage-usage', verifyToken, async (req, res) => {
 
 app.post('/api/download-invoice', isAuthenticated, async (req, res) => {
     const { invoiceId } = req.body; 
+    console.log("Corps de la requête reçu:", req.body);
+    console.log("Invoice ID reçu:", req.body.invoiceId);
     
     if (!invoiceId) {
+        console.log("Erreur: ID de facture manquant.");
         return res.status(400).json({ message: 'ID de facture manquant.' });
     }
     try {
@@ -488,9 +492,10 @@ app.post('/api/download-invoice', isAuthenticated, async (req, res) => {
         });
 
         if (!invoice) {
+            console.log("Erreur: Facture non trouvée.");
             return res.status(404).json({ message: 'Facture non trouvée.' });
         }
-
+        console.log("Génération du PDF pour l'ID de facture:", invoiceId);
         const user = invoice.user;  // Utilisateur lié à la facture
         const amountTTC = parseFloat(invoice.amount) || 0;
         const amountHT = (amountTTC / 1.20).toFixed(2);  // Prix HT (déduit 20%)
