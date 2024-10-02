@@ -33,6 +33,11 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING,
         defaultValue: 'user',
     },
+    Capacite_stockage: { 
+        type: DataTypes.INTEGER,
+        defaultValue: 0, 
+        allowNull: false,
+    },
 }, {
     tableName: 'utilisateur',
     timestamps: false,
