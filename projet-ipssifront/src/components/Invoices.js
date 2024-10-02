@@ -23,7 +23,6 @@ const Invoices = () => {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                console.log("Factures reçues :", response.data);
                 setInvoices(response.data);
             } catch (err) {
                 setError('Erreur lors de la récupération des factures.');
@@ -38,8 +37,6 @@ const Invoices = () => {
     const handleDownloadInvoice = async (invoiceId) => {
         const token = localStorage.getItem('token');
         try {
-            console.log("Token utilisé:", token);
-            console.log("Invoice ID envoyé:", invoiceId); // Pour vérifier que l'ID est correct
             if (!invoiceId) {
                 console.error("Erreur: invoiceId est undefined ou null.");
                 alert("Impossible de télécharger la facture. ID de facture manquant.");
@@ -91,10 +88,9 @@ const Invoices = () => {
                 {invoices.length === 0 ? (
                     <p>Aucune facture disponible.</p>
                 ) : (
-                    invoices.map((invoice) => {
-                        console.log("Invoice Objet:", invoice); // Vérifier la structure de chaque facture
+                    invoices.map((invoice, index) => {
                         return (
-                            <li key={invoice.id || `${invoice.clientName}-${invoice.purchaseDate}`}>
+                            <li key={invoice.id || `${invoice.clientName}-${invoice.purchaseDate}-${index}`}>
                                 <strong>Client :</strong> {invoice.clientName} - 
                                 <strong> Montant :</strong> {invoice.priceTTC} - 
                                 <strong> Date :</strong> {invoice.purchaseDate} - 
@@ -103,6 +99,7 @@ const Invoices = () => {
                             </li>
                         );
                     })
+                    
                     
                 )}
             </ul>

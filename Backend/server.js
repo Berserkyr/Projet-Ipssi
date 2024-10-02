@@ -422,7 +422,6 @@ app.get('/api/user-invoices', isAuthenticated, async (req, res) => {
             include: [{
                 model: Invoice,
                 as: 'invoices',
-                attributes: ['id', 'clientName', 'purchaseDate', 'amount', 'description', 'status', 'companyName', 'siret', 'vatNumber']  
             }]
         });
 
@@ -434,6 +433,7 @@ app.get('/api/user-invoices', isAuthenticated, async (req, res) => {
             const amountHT = (amountTTC / 1.20).toFixed(2);  
 
             return {
+                id: invoice.id,
                 clientName: `${user.Nom} ${user.Prenom}`,
                 purchaseDate: invoice.date.toISOString().split('T')[0],  
                 priceTTC: amountTTC.toFixed(2) + ' €',  
