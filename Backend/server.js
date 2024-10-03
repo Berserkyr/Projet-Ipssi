@@ -256,17 +256,37 @@ app.get('/api/files/:userId', verifyToken, async (req, res) => {
   });
   
 // Route pour supprimer un fichier
-app.delete('/api/files/:fileName', verifyToken, (req, res) => {
-    const userId = req.userId;
-    const filePath = path.join(__dirname, 'uploads', String(userId), req.params.fileName);
-    
-    fs.unlink(filePath, (err) => {
-        if (err) {
-            return res.status(500).json({ message: 'Erreur lors de la suppression du fichier.' });
+app.delete('/api/files/:fileId', verifyToken, async (req, res) => {
+    const userId = req.userId; // ID de l'utilisateur authentifié
+    const fileId = req.params.fileId; // ID du fichier à supprimer
+
+    try {
+        // Rechercher le fichier dans la base de données par son ID et vérifier qu'il appartient à l'utilisateur
+        const file = await File.findOne({ where: { ID_Fichier: fileId, ID_Utilisateur: userId } });
+        if (!file) {
+            return res.status(404).json({ message: 'Fichier non trouvé dans la base de données.' });
         }
-        res.json({ message: 'Fichier supprimé avec succès.' });
-    });
+
+        const filePath = path.join(__dirname, 'uploads', String(userId), file.Nom_fichier);
+
+        // Supprimer le fichier du système de fichiers
+        fs.unlink(filePath, async (err) => {
+            if (err) {
+                console.error('Erreur lors de la suppression du fichier du système de fichiers:', err);
+                return res.status(500).json({ message: 'Erreur lors de la suppression du fichier.' });
+            }
+
+            // Supprimer le fichier de la base de données
+            await file.destroy();
+
+            res.json({ message: 'Fichier supprimé avec succès du système et de la base de données.' });
+        });
+    } catch (error) {
+        console.error('Erreur lors de la suppression du fichier :', error);
+        res.status(500).json({ message: 'Erreur lors de la suppression du fichier.' });
+    }
 });
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 //app.use('/api/files', fileRoutes);

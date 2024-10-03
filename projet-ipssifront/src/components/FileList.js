@@ -35,29 +35,28 @@ const FileList = () => {
         fetchFiles();
     }, [page]);
 
+    // Fonction pour gérer la suppression après confirmation
+    const handleDelete = async () => {
+        if (!fileToDelete) return;
 
-// Fonction pour gérer la suppression après confirmation
-const handleDelete = async () => {
-    if (!fileToDelete) return;
+        try {
+            await axios.delete(`http://localhost:5000/api/files/${fileToDelete}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            // Mettre à jour la liste des fichiers après la suppression
+            setFileToDelete(null); // Réinitialiser l'état du fichier à supprimer
+            fetchFiles(); // Rafraîchir la liste des fichiers après la suppression
+            setShowModal(false); // Fermer la modal après suppression
+        } catch (error) {
+            setError('Erreur lors de la suppression du fichier.');
+        }
+    };
 
-    try {
-        await axios.delete(`http://localhost:5000/api/files/${fileToDelete}`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`
-            }
-        });
-        // Mettre à jour la liste des fichiers après la suppression
-        setFileToDelete(null); // Réinitialiser l'état du fichier à supprimer
-        fetchFiles(); // Rafraîchir la liste des fichiers après la suppression
-        setShowModal(false); // Fermer la modal après suppression
-    } catch (error) {
-        setError('Erreur lors de la suppression du fichier.');
-    }
-};
-
-
-    const openConfirmModal = (fileName) => {
-        setFileToDelete(fileName);
+    // Ouvre la modal et passe l'ID du fichier à supprimer
+    const openConfirmModal = (fileId) => {
+        setFileToDelete(fileId);
         setShowModal(true);
     };
 
@@ -90,7 +89,7 @@ const handleDelete = async () => {
             <div className="file-list">
                 {files.length > 0 ? (
                     files.map((file, index) => {
-                        const uniqueKey = file.name || index;
+                        const uniqueKey = file.id || index;  // Utiliser l'ID du fichier comme clé unique
                         return (
                             <div key={uniqueKey} className="file-card">
                                 <div className="file-info">
@@ -103,7 +102,8 @@ const handleDelete = async () => {
                                     {getFilePreview(file)}
                                 </div>
 
-                                <button className="delete-btn" onClick={() => openConfirmModal(file.name)}>
+                                {/* Passer l'ID du fichier au lieu du nom */}
+                                <button className="delete-btn" onClick={() => openConfirmModal(file.id)}>
                                     <i className="fa fa-trash"></i> Supprimer
                                 </button>
                             </div>
