@@ -1,0 +1,79 @@
+/* Conteneur principal de la page Aide */
+.aide-page {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    color: #333;
+}
+
+/* Titre principal */
+.aide-page h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #1e3c72;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Section FAQ */
+.faq-section {
+    margin-bottom: 40px;
+}
+
+.faq-section h2 {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    color: #2a5298;
+    font-weight: 600;
+}
+
+/* Élément FAQ */
+.faq-item {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-left: 4px solid #1e3c72;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+}
+
+.faq-item h3 {
+    font-size: 1.4rem;
+    color: #1e3c72;
+}
+
+.faq-item p {
+    margin: 10px 0 0;
+    color: #555;
+}
+
+/* Section plus d'aide */
+.more-help {
+    text-align: center;
+}
+
+.more-help h2 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #2a5298;
+}
+
+.more-help p {
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.more-help a {
+    color: #1e3c72;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+.more-help a:hover {
+    color: #2a5298;
+    text-decoration: underline;
+}

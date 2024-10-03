@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import UserDashboard from './pages/UserDashboard';  // Import du Dashboard pour les utilisateurs
-import LoginPage from './pages/LoginPage';  // Import de la page de connexion
-import SignupPage from './pages/SignupPage';  // Import de la page d'inscription
-import AccountManagement from './pages/AccountManagement';  // Import de la page de gestion du compte
-import MentionsLegales from './pages/MentionsLegales';  // Import des mentions légales
-import SettingsPage from './pages/SettingsPage';  // Import de la page des paramètres
-import AdminPage from './pages/AdminPage';  // Import de la page administrateur
+import UserDashboard from './pages/UserDashboard';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import AccountManagement from './pages/AccountManagement';
+import MentionsLegales from './pages/MentionsLegales';
+import SettingsPage from './pages/SettingsPage';
+import AdminPage from './pages/AdminPage';
+import Contact from './pages/Contact';  // Import de la page de contact
+import Aide from './pages/Aide';  // Import de la page d'aide
 
 const App = () => {
     // État pour suivre l'authentification de l'utilisateur
@@ -18,25 +20,25 @@ const App = () => {
 
     // Fonction pour gérer la déconnexion
     const handleLogout = () => {
-        localStorage.removeItem('token');  // Supprimer le token d'authentification du localStorage
-        localStorage.removeItem('role');   // Supprimer le rôle de l'utilisateur du localStorage
-        setIsAuthenticated(false);  // Mettre à jour l'état d'authentification
-        setUserRole(null);  // Réinitialiser le rôle de l'utilisateur
-        window.location.href = '/login';  // Rediriger vers la page de connexion
+        localStorage.removeItem('token');
+        localStorage.removeItem('role');
+        setIsAuthenticated(false);
+        setUserRole(null);
+        window.location.href = '/login';
     };
 
     // Utilisation de useEffect pour vérifier l'authentification à chaque chargement de composant
     useEffect(() => {
         const token = localStorage.getItem('token');
         const role = localStorage.getItem('role');
-        setIsAuthenticated(!!token);  // Mettre à jour l'état en fonction de la présence d'un token
-        setUserRole(role);  // Mettre à jour le rôle de l'utilisateur
+        setIsAuthenticated(!!token);
+        setUserRole(role);
     }, []);
 
     return (
         <Router>
             <div className="app">
-                <Header onLogout={handleLogout} /> {/* On passe la fonction de déconnexion au Header */}
+                <Header onLogout={handleLogout} />
                 <Routes>
                     {/* Route pour la page de connexion */}
                     <Route 
@@ -71,13 +73,25 @@ const App = () => {
                     {/* Route pour les mentions légales */}
                     <Route 
                         path="/mentions-legales" 
-                        element={<MentionsLegales />} 
+                        element={<MentionsLegales />}
                     />
 
                     {/* Route pour les paramètres */}
                     <Route 
                         path="/settings" 
                         element={isAuthenticated ? <SettingsPage /> : <Navigate to="/login" />}
+                    />
+
+                    {/* Route pour la page de contact */}
+                    <Route 
+                        path="/contact" 
+                        element={<Contact />}
+                    />
+
+                    {/* Route pour la page d'aide */}
+                    <Route 
+                        path="/aide" 
+                        element={<Aide />}
                     />
 
                     {/* Redirection par défaut selon le rôle de l'utilisateur */}
