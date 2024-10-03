@@ -45,16 +45,17 @@ const FileList = () => {
                 }
             });
             // Mise à jour locale de la liste des fichiers après suppression
-            setFiles(files.filter(file => file.id !== fileToDelete));
+            setFiles(files.filter(file => file.name !== fileToDelete));
             setShowModal(false); // Fermer la modal après suppression
+            setFileToDelete(null);
         } catch (error) {
             setError('Erreur lors de la suppression du fichier.');
         }
     };
 
     // Fonction pour ouvrir la modal de confirmation de suppression
-    const openConfirmModal = (fileId) => {
-        setFileToDelete(fileId); // Définir l'ID du fichier à supprimer
+    const openConfirmModal = (fileName) => {
+        setFileToDelete(fileName); // Définir le nom du fichier à supprimer
         setShowModal(true); // Ouvrir la modal
     };
 
@@ -68,6 +69,17 @@ const FileList = () => {
         return /\.pdf$/i.test(fileName);
     };
 
+    // Fonction pour obtenir la prévisualisation d'un fichier
+    const getFilePreview = (file) => {
+        if (isImageFile(file.name)) {
+            return <img src={file.url} alt={file.name} className="file-image" />;
+        } else if (isPdfFile(file.name)) {
+            return <a href={file.url} target="_blank" rel="noopener noreferrer" className="file-view-btn">Visualiser le PDF</a>;
+        } else {
+            return <a href={file.url} target="_blank" rel="noopener noreferrer" className="file-view-btn">Télécharger le fichier</a>;
+        }
+    };
+
     return (
         <div className="file-list-container">
             <h3>Mes fichiers</h3>
@@ -76,7 +88,7 @@ const FileList = () => {
             <ul className="file-list">
                 {files.length > 0 ? (
                     files.map((file, index) => {
-                        const uniqueKey = file.id || index;
+                        const uniqueKey = file.name || index;
                         return (
                             <li key={uniqueKey} className="file-item">
                                 <div className="file-info">
@@ -85,16 +97,10 @@ const FileList = () => {
                                 </div>
 
                                 <div className="file-preview">
-                                    {isImageFile(file.name) ? (
-                                        <img src={file.url} alt={file.name} className="file-image" />
-                                    ) : isPdfFile(file.name) ? (
-                                        <a href={file.url} target="_blank" rel="noopener noreferrer" className="file-view-btn">Visualiser le PDF</a>
-                                    ) : (
-                                        <a href={file.url} target="_blank" rel="noopener noreferrer" className="file-view-btn">Télécharger le fichier</a>
-                                    )}
+                                    {getFilePreview(file)}
                                 </div>
 
-                                <button className="delete-btn" onClick={() => openConfirmModal(file.id)}>Supprimer</button>
+                                <button className="delete-btn" onClick={() => openConfirmModal(file.name)}>Supprimer</button>
                             </li>
                         );
                     })

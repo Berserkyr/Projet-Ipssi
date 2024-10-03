@@ -1,79 +1,114 @@
+/* Conteneur principal pour les factures */
 .invoices-container {
-    max-width: 800px;
-    margin: 40px auto;
     padding: 30px;
-    background-color: rgba(255, 255, 255, 0.8); /* Fond léger et transparent pour un effet moderne */
+    max-width: 1000px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+    color: #f1f1f1;
+    background: linear-gradient(90deg, #1e3c72, #2a5298); /* Dégradé bleu semblable au header */
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Ombre douce */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
-h2 {
+/* Titre principal */
+.invoices-container h2 {
     text-align: center;
-    font-size: 1.8rem;
-    margin-bottom: 30px;
-    color: #333;
+    color: #ffffff;
+    margin-bottom: 25px;
+    font-size: 2rem;
+    letter-spacing: 1.5px;
+}
+
+/* Message d'erreur */
+.error-message {
+    color: #e74c3c;
+    text-align: center;
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+
+/* Message de chargement */
+.loading {
+    text-align: center;
+    font-size: 1.2em;
+    color: #ffffff;
+}
+
+/* Message lorsqu'il n'y a pas de factures */
+.no-invoices {
+    text-align: center;
+    font-size: 1.1em;
+    color: #b0bec5;
+}
+
+/* Liste des factures */
+.invoice-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
 }
 
 /* Carte de facture */
 .invoice-card {
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    padding: 25px;
-    margin-bottom: 25px;
-    transition: box-shadow 0.3s ease, transform 0.2s ease; /* Ajout d'un effet de transformation */
+    background: #2c3e50; /* Couleur plus sombre pour contraster avec le dégradé */
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .invoice-card:hover {
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Ombre plus marquée au survol */
-    transform: translateY(-5px); /* Mise en avant légère au survol */
-}
-
-/* En-tête de la facture */
-.invoice-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    font-weight: bold;
-    font-size: 1.2rem;
-    color: #555;
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
 
 /* Détails de la facture */
-.invoice-details {
-    line-height: 1.6;
-    color: #666;
+.invoice-details p {
+    margin: 10px 0;
     font-size: 1rem;
-}
-
-/* Pied de la facture */
-.invoice-footer {
-    text-align: right;
-    margin-top: 15px;
 }
 
 /* Bouton de téléchargement */
 .download-btn {
-    background-color: #007bff;
-    color: white;
-    border: none;
+    background-color: #00bcd4;
+    color: #ffffff;
     padding: 12px 20px;
+    border: none;
     border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
     cursor: pointer;
-    font-size: 1.1rem;
-    transition: background-color 0.3s ease, transform 0.2s ease; /* Transition pour le survol */
-    display: inline-flex;
-    align-items: center; /* Aligner l'icône et le texte */
+    text-align: center;
+    width: 100%;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .download-btn:hover {
-    background-color: #0056b3;
-    transform: scale(1.05); /* Légère mise en avant au survol */
+    background-color: #008ba3; /* Variation de la couleur cyan */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
 }
 
-.download-btn i {
-    margin-right: 8px;
-    font-size: 1.2rem;
-    vertical-align: middle; /* Alignement de l'icône */
+.download-btn:active {
+    transform: scale(0.97);
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Réactivité pour petits écrans */
+@media (max-width: 768px) {
+    .invoices-container {
+        padding: 20px;
+    }
+
+    .invoice-card {
+        padding: 15px;
+    }
+
+    .download-btn {
+        padding: 10px;
+    }
+
+    .invoice-details p {
+        font-size: 0.9rem;
+    }
 }

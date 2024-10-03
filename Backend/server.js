@@ -13,7 +13,7 @@ const paypal = require('paypal-rest-sdk');
 const nodemailer = require('nodemailer');
 const { User, Invoice } = require('./models');
 const File = require('./models/File');
-
+const fileRoutes = require('./routes/fileRoutes');
 
 // Importer les routes
 const userRoutes = require('./routes/userRoutes');  // Chemin vers les routes utilisateur
@@ -250,6 +250,9 @@ app.delete('/api/files/:fileName', verifyToken, (req, res) => {
         res.json({ message: 'Fichier supprimé avec succès.' });
     });
 });
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+app.use('/api/files', fileRoutes);
 
 // ----------------------------
 // GESTION DES ERREURS

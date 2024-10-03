@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../assets/css/AccountManagement.css';  // Fichier CSS
+import StorageStats from '../components/StorageStats';
 
 const AccountManagement = () => {
     const [user, setUser] = useState(null);
@@ -45,6 +46,7 @@ const AccountManagement = () => {
             setError('Erreur lors de la suppression de votre compte.');
         }
     };
+    
 
     return (
         <div className="account-management">
@@ -59,6 +61,8 @@ const AccountManagement = () => {
                     <p><strong>Email :</strong> {user.Email}</p>
                     <p><strong>Adresse :</strong> {user.Adresse}</p>
                     <p><strong>Ville :</strong> {user.Ville}</p>
+                                        {/* Ajouter les statistiques de stockage */}
+                                        <StorageStats />
                 </div>
             ) : (
                 <p>Chargement des informations...</p>
