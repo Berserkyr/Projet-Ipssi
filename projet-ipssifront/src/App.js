@@ -2,13 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import UserDashboard from './pages/UserDashboard';  // Import du Dashboard
-import LoginPage from './pages/LoginPage';  // Import de la page de connexion
-import SignupPage from './pages/SignupPage';  // Import de la page d'inscription
-import AccountManagement from './pages/AccountManagement';  // Import de la page de gestion du compte
-import MentionsLegales from './pages/MentionsLegales';  // Importez la page Mentions légales
-import SettingsPage from './pages/SettingsPage';  // Assurez-vous que le chemin est correct
-import OTPVerificationPage from './pages/OTPVerificationPage';  // Import the OTP verification page
 import UserDashboard from './pages/UserDashboard';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
@@ -22,7 +15,6 @@ import Aide from './pages/Aide';  // Import de la page d'aide
 const App = () => {
     // État pour suivre l'authentification de l'utilisateur
     const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
-    const [isOTPVerified, setIsOTPVerified] = useState(false);  // New state for OTP verification
 
     // Fonction pour gérer la déconnexion
     const handleLogout = () => {
