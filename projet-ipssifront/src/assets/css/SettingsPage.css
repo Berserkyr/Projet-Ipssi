@@ -1,64 +1,75 @@
 /* Style global de la page */
 .settings-page {
     padding: 40px;
-    background-color: #f0f0f0;
-    min-height: 100vh; /* Occuper toute la hauteur de l'écran */
+    background-color: #f0f0f0; /* Arrière-plan gris clair pour le thème clair */
+    min-height: 100vh; /* Prendre toute la hauteur de l'écran */
     display: flex;
     flex-direction: column;
+    align-items: center;
     justify-content: flex-start; /* Alignement en haut */
+    transition: background-color 0.3s ease; /* Transition douce pour le changement de thème */
 }
 
 /* Titre principal */
 .settings-page h2 {
-    font-size: 32px;
+    font-size: 2.5rem;
     margin-bottom: 40px;
-    text-align: left;
-    color: #333; /* Couleur sombre pour une meilleure lisibilité */
+    text-align: center;
+    color: #1e3c72; /* Bleu pour le thème clair */
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Légère ombre pour plus de lisibilité */
 }
 
 /* Section de paramètres avec des "cartes" */
 .settings-section {
-    background-color: white;
-    padding: 20px;
+    background-color: #ffffff;
+    padding: 30px;
     margin-bottom: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     text-align: left;
-    width: 100%; /* Occuper toute la largeur disponible */
-    max-width: 800px; /* Limiter la largeur maximale */
+    width: 100%;
+    max-width: 800px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* Titre des sections */
 .settings-section h3 {
-    font-size: 24px;
-    margin-bottom: 10px;
-    color: #333; /* Texte sombre pour le thème clair */
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    color: #2a5298; /* Bleu doux pour les titres des sections */
 }
 
 /* Texte descriptif */
 .settings-section p {
-    font-size: 16px;
-    margin-bottom: 10px;
-    color: #555; /* Texte contrasté pour lisibilité */
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    color: #555; /* Gris pour améliorer la lisibilité */
 }
 
 /* Sélecteurs */
 .settings-section select {
     width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 5px;
+    padding: 12px;
+    font-size: 1rem;
+    border-radius: 8px;
     border: 1px solid #bbb;
-    margin-top: 5px;
-    background-color: #fff;
-    color: #333; /* Texte sombre sur fond clair */
+    margin-top: 10px;
+    background-color: #ffffff;
+    color: #333;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.settings-section select:focus {
+    border-color: #1e3c72; /* Bordure bleue au focus */
+    outline: none;
 }
 
 /* Section des paramètres actuels */
 .current-settings {
     margin-top: 40px;
-    font-size: 16px;
-    color: #555; /* Texte avec contraste suffisant */
+    font-size: 1rem;
+    color: #555;
     text-align: left;
     max-width: 800px;
 }
@@ -67,44 +78,50 @@
 .reset-btn {
     background-color: #ff4d4d;
     color: white;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 5px;
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    border-radius: 8px;
     border: none;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
     margin-top: 20px;
     max-width: 800px;
-    width: 100%; /* Utiliser toute la largeur */
+    width: 100%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Hover sur le bouton de réinitialisation */
 .reset-btn:hover {
     background-color: #ff1a1a;
+    transform: translateY(-3px);
 }
 
 /* Mode sombre */
 .settings-page.dark {
-    background-color: #1e1e1e;
-    color: #eaeaea;
+    background-color: #1e1e1e; /* Arrière-plan sombre pour le mode sombre */
+    color: #eaeaea; /* Texte clair */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Transition pour le changement de thème */
+}
+
+.settings-page.dark h2 {
+    color: #ffffff; /* Titre principal en blanc pour le mode sombre */
 }
 
 .settings-page.dark .settings-section {
-    background-color: #333;
-    color: #eaeaea;
+    background-color: #333; /* Couleur de fond sombre pour les sections */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    color: #eaeaea; /* Texte clair pour les sections */
 }
 
-.settings-page.dark h2,
 .settings-page.dark h3 {
-    color: #fff; /* Blanc pur pour un meilleur contraste */
+    color: #ffffff; /* Couleur des titres des sections en blanc */
 }
 
 .settings-page.dark p {
-    color: #cccccc; /* Gris clair pour éviter le blanc pur sur gris */
+    color: #cccccc; /* Gris clair pour éviter un blanc pur sur fond sombre */
 }
 
 .settings-page.dark .reset-btn {
-    background-color: #ff6666;
+    background-color: #ff6666; /* Rouge plus doux pour mode sombre */
     color: white;
 }
 
@@ -113,9 +130,9 @@
 }
 
 .settings-page.dark .settings-section select {
-    background-color: #444;
+    background-color: #444; /* Fond sombre pour le select */
     color: #eaeaea; /* Texte clair sur fond sombre */
-    border-color: #666;
+    border-color: #666; /* Bordure grise */
 }
 
 /* Style spécifique pour les petits écrans */
@@ -125,10 +142,23 @@
     }
 
     .settings-section {
-        padding: 15px;
+        padding: 20px;
     }
 
     .reset-btn {
         width: 100%;
+        padding: 12px 20px;
+    }
+
+    .settings-page h2 {
+        font-size: 2rem;
+    }
+
+    .settings-section h3 {
+        font-size: 1.5rem;
+    }
+
+    .settings-section p {
+        font-size: 1rem;
     }
 }
