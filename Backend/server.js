@@ -7,14 +7,15 @@ const sequelize = require('./config/database'); // Connexion Sequelize à MySQL
 const multer = require('multer'); // Pour l'upload de fichiers
 const path = require('path');
 const fs = require('fs'); // Pour la gestion des fichiers (suppression)
-const { isAuthenticated, isAdmin } = require('./middleware/authMiddleware');
-const bodyParser = require('body-parser');
 const PDFDocument = require('pdfkit');
 const paypal = require('paypal-rest-sdk');
 const nodemailer = require('nodemailer');
 const { User, Invoice } = require('./models');
 const File = require('./models/File');
 //const fileRoutes = require('./routes/fileRoutes');
+const { verifyToken, isAuthenticated, isAdmin, isOTPVerified } = require('./middleware/authMiddleware'); // Ensure this line includes verifyTokenconst nodemailer = require('nodemailer'); 
+const { Op } = require('sequelize');
+const app = express();
 
 // Importer les routes
 const userRoutes = require('./routes/userRoutes');  // Chemin vers les routes utilisateur
@@ -28,16 +29,7 @@ paypal.configure({
     'client_secret': process.env.PAYPAL_CLIENT_SECRET
 }); 
 
-// Importer le middleware de vérification du token
-const verifyToken = require('./middleware/verifyToken');
 
-const File = require('./models/File');
-const userRoutes = require('./routes/userRoutes');  // Chemin vers ton fichier userRoutes.js
-const bodyParser = require('body-parser');
-const { verifyToken, isAuthenticated, isAdmin, isOTPVerified } = require('./middleware/authMiddleware'); // Ensure this line includes verifyTokenconst nodemailer = require('nodemailer'); 
-const nodemailer = require('nodemailer');
-const { Op } = require('sequelize');
-const app = express();
 app.use(express.json()); // Middleware pour gérer les requêtes avec du JSON
 
 // Configuration CORS (autorisation de toutes les origines)
@@ -104,30 +96,23 @@ app.post('/api/register', async (req, res) => {
             return res.status(400).json({ message: 'Utilisateur déjà inscrit.' });
         }
 
-        // Hasher le mot de passe
-    const { firstName, lastName, address, email, password } = req.body;
-    
-    try {
         // Hash the password before saving
         const hashedPassword = bcrypt.hashSync(password, 10);
 
-        
         const newUser = await User.create({
             FirstName: firstName,
             LastName: lastName,
             Address: address,
             Email: email,
             Mot_de_passe: hashedPassword,
-            Adresse: address,
-            Capacite_stockage: 20,  // Ajouter 20 Go de stockage à l'inscription
-            Mot_de_passe: hashedPassword // Save the hashed password
+            Capacite_stockage: 20  // Ajouter 20 Go de stockage à l'inscription
         });
 
         const userMailOptions = {
             from: process.env.MAIL,
             to: newUser.Email,
             subject: 'Confirmation d\'inscription',
-            text: `Bienvenue ${newUser.Prenom} ${newUser.Nom}, votre compte a été créé avec succès et vous disposez de 20 Go de stockage.`
+            text: `Bienvenue ${newUser.FirstName} ${newUser.LastName}, votre compte a été créé avec succès et vous disposez de 20 Go de stockage.`
         };
         await transporter.sendMail(userMailOptions);
 
@@ -135,24 +120,21 @@ app.post('/api/register', async (req, res) => {
             from: process.env.MAIL,
             to: process.env.MAIL,  
             subject: 'Nouvelle inscription utilisateur',
-            text: `Un nouvel utilisateur s'est inscrit : ${newUser.Email} (Nom : ${newUser.Prenom} ${newUser.Nom}, Adresse : ${newUser.Adresse}). Il dispose de 20 Go de stockage.`
+            text: `Un nouvel utilisateur s'est inscrit : ${newUser.Email} (Nom : ${newUser.FirstName} ${newUser.LastName}, Adresse : ${newUser.Address}). Il dispose de 20 Go de stockage.`
         };
         await transporter.sendMail(adminMailOptions);
-
 
         res.status(201).json({
             message: 'Inscription réussie avec 20 Go de stockage ajoutés. Un email de confirmation a été envoyé.',
             user: newUser
         });
 
-        
-        return res.status(201).json({ message: 'Utilisateur créé avec succès', userId: newUser.ID_Utilisateur });
     } catch (error) {
         console.error('Erreur lors de l\'inscription :', error);
         res.status(500).json({ message: 'Erreur lors de l\'inscription.' });
-        return res.status(500).json({ message: 'Erreur lors de la création de l\'utilisateur.' });
     }
 });
+
 
 
 
