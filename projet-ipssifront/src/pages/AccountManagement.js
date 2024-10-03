@@ -27,26 +27,23 @@ const AccountManagement = () => {
 
         fetchUserData();
     }, []);
-
-    // Fonction pour supprimer le compte utilisateur
     const handleDeleteAccount = async () => {
         const confirmDelete = window.confirm("Êtes-vous sûr de vouloir supprimer votre compte ?");
         if (!confirmDelete) return;
 
         try {
-            await axios.delete('http://localhost:5000/api/user', {
+            await axios.delete('http://localhost:5000/api/delete-account', {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
                 },
             });
             setSuccess('Votre compte a été supprimé.');
             localStorage.removeItem('token');
-            navigate('/');  // Redirection après suppression du compte
+            window.location.reload();
         } catch (err) {
             setError('Erreur lors de la suppression de votre compte.');
         }
     };
-    
 
     return (
         <div className="account-management">
@@ -61,8 +58,8 @@ const AccountManagement = () => {
                     <p><strong>Email :</strong> {user.Email}</p>
                     <p><strong>Adresse :</strong> {user.Adresse}</p>
                     <p><strong>Ville :</strong> {user.Ville}</p>
-                                        {/* Ajouter les statistiques de stockage */}
-                                        <StorageStats />
+                    {/* Ajouter les statistiques de stockage */}
+                    <StorageStats />
                 </div>
             ) : (
                 <p>Chargement des informations...</p>
