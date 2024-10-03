@@ -28,16 +28,6 @@ paypal.configure({
     'client_secret': process.env.PAYPAL_CLIENT_SECRET
 }); 
 
-//Config Mail
-
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.MAIL, 
-        pass: process.env.MDP_GG   
-    }
-});
-
 // Importer le middleware de vérification du token
 const verifyToken = require('./middleware/verifyToken');
 
@@ -90,8 +80,6 @@ sequelize.sync({ alter: true })
 .then(() => console.log('Base de données synchronisée avec Sequelize.'))
 .catch(err => console.error('Erreur lors de la synchronisation de la base de données:', err));
 // Utiliser les routes utilisateur et admin
-    .then(() => console.log('Base de données synchronisée avec Sequelize.'))
-    .catch(err => console.error('Erreur lors de la synchronisation de la base de données:', err));
 app.use('/api', userRoutes);
 app.use('/api', adminRoutes); 
 
@@ -131,7 +119,7 @@ app.post('/api/register', async (req, res) => {
             Email: email,
             Mot_de_passe: hashedPassword,
             Adresse: address,
-            Capacite_stockage: 20  // Ajouter 20 Go de stockage à l'inscription
+            Capacite_stockage: 20,  // Ajouter 20 Go de stockage à l'inscription
             Mot_de_passe: hashedPassword // Save the hashed password
         });
 
