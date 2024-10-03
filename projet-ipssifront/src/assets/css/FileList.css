@@ -1,81 +1,250 @@
-.file-item {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.8), rgba(240, 240, 240, 0.5)); /* Dégradé doux */
-    -webkit-backdrop-filter: blur(15px); /* Effet de flou plus subtil */
-    backdrop-filter: blur(10px);
-    border-radius: 20px; /* Coins plus arrondis pour un look plus organique */
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1), 0 1px 4px rgba(0, 0, 0, 0.05); /* Ombres douces et légères */
-    
-    padding: 30px; /* Espacement plus généreux */
-    margin-bottom: 25px;
+.file-list-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    justify-content: flex-start;
+    align-items: stretch;
     
-    /* Ajout de bordures fines pour éviter l'effet de boîte dans boîte */
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    width: 100%;
+    box-sizing: border-box;
+    padding: 20px;
+    min-height: 100%;  /* Assurez-vous que la hauteur minimale est respectée */
+   
 }
 
-.file-item:hover {
-    transform: translateY(-8px); /* Mise en avant plus visible au survol */
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.05);
+
+
+
+/* Titre de la section de fichiers */
+.file-list-title {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 2rem;
+    color: #1e3c72; /* Couleur en harmonie avec le dégradé du header */
+    font-weight: bold;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Légère ombre pour le titre */
+}
+
+/* Message d'erreur */
+.error-message {
+    color: #e74c3c; /* Rouge vif pour signaler l'erreur, en cohérence avec le bouton de déconnexion */
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+/* Message lorsqu'il n'y a pas de fichiers */
+.no-files {
+    text-align: center;
+    color: #6c757d;
+    font-size: 1.2rem;
+    font-style: italic;
+}
+
+/* Liste de fichiers - affichage en grille */
+.file-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    width: 100%;  /* S'assure que `.file-list` ne dépasse pas la largeur de son conteneur parent */
+    height: auto; /* S'assure que la hauteur s'ajuste à son contenu */
+    box-sizing: border-box; /* Inclut la bordure et le padding dans les calculs de taille */
+}
+
+/* Carte de fichier */
+.file-card {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    border: 1px solid #ddd;
+}
+
+.file-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    border: 1px solid #007bff; /* Bordure bleue en survol */
 }
 
 /* Informations du fichier */
 .file-info {
-    font-size: 1.3rem;
     margin-bottom: 15px;
-    color: #444; /* Couleur plus douce et moderne */
-    text-align: center;
-    font-weight: 500;
 }
 
-/* Prévisualisation */
+/* Troncature du titre du fichier pour s'adapter à la carte */
+.file-name {
+    color: #007bff; /* Bleu en harmonie avec le style général */
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.3s ease;
+}
+
+.file-name:hover {
+    color: #0056b3; /* Couleur plus foncée lors du survol */
+}
+
+/* Autres informations du fichier */
+.file-size,
+.file-date {
+    margin: 5px 0;
+    font-size: 1rem;
+    color: #555;
+}
+
+/* Aperçu du fichier */
 .file-preview {
-    margin-bottom: 20px;
+    margin: 15px 0;
+    text-align: center;
 }
 
 .file-image {
-    width: 120px;
+    max-width: 100%;
     height: auto;
-    border-radius: 12px; /* Coins plus arrondis */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Ombre subtile sur l'image */
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Bouton de visualisation */
+/* Bouton de visualisation ou de téléchargement */
 .file-view-btn {
-    background-color: #007bff;
-    color: white;
+    background-color: #28a745;
+    color: #ffffff;
+    padding: 12px 20px;
     border: none;
-    padding: 12px 25px;
-    font-size: 1rem;
-    border-radius: 50px; /* Bouton plus arrondi pour un look moderne */
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    border-radius: 8px;
     text-decoration: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Ombre douce */
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .file-view-btn:hover {
-    background-color: #0056b3;
-    transform: scale(1.05); /* Mise en avant douce au survol */
+    background-color: #218838;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }
 
-/* Bouton de suppression */
+/* Bouton supprimer */
 .delete-btn {
-    background-color: #dc3545;
-    color: white;
+    background-color: #e74c3c; /* Rouge en harmonie avec le style général */
+    color: #ffffff;
+    padding: 12px 20px;
     border: none;
-    padding: 12px 25px;
-    font-size: 1rem;
-    border-radius: 50px; /* Arrondi similaire au bouton de vue */
+    border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    margin-top: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-weight: bold;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .delete-btn:hover {
     background-color: #c82333;
-    transform: scale(1.05);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 15px; /* Espacement augmenté entre les boutons */
+}
+
+.pagination-btn {
+    background: #1e3c72; /* Couleur bleue en harmonie avec le header */
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.pagination-btn:hover {
+    background: #2a5298; /* Couleur plus claire en survol */
+    transform: translateY(-3px);
+}
+
+.pagination-btn.active {
+    background: #0056b3;
+    font-weight: bold;
+    transform: translateY(0);
+}
+
+/* Media Queries pour rendre le composant FileList réactif */
+@media (max-width: 1024px) {
+    .file-list-container {
+        padding: 20px;
+    }
+
+    .file-name {
+        font-size: 1.1rem;
+    }
+
+    .file-size,
+    .file-date {
+        font-size: 0.95rem;
+    }
+
+    .pagination-btn {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .file-list-container {
+        padding: 15px;
+    }
+
+    .file-list {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .file-name {
+        font-size: 1rem;
+    }
+
+    .file-size,
+    .file-date {
+        font-size: 0.9rem;
+    }
+
+    .pagination-btn {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .file-list-container {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .file-name {
+        font-size: 0.95rem;
+    }
+
+    .file-size,
+    .file-date {
+        font-size: 0.85rem;
+    }
+
+    .pagination-btn {
+        padding: 5px 8px;
+        font-size: 0.8rem;
+    }
 }
