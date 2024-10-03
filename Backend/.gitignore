@@ -24,3 +24,7 @@ yarn-error.log*
 
 factures/*
 !factures/.gitkeep
+
+uploads/*
+!uploads/.gitkeep
+

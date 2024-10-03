@@ -500,29 +500,42 @@ app.get('/api/storage-usage', verifyToken, async (req, res) => {
     const userId = req.userId;
 
     try {
-        // Récupérer tous les fichiers de l'utilisateur
+        // Récupérer les fichiers de l'utilisateur
         const files = await File.findAll({
             where: { ID_Utilisateur: userId }
         });
 
-        // Vérifier et calculer la taille totale
+        // Calculer la taille totale des fichiers
         const totalUsage = files.reduce((acc, file) => {
-            // Assurer que file.Taille est bien un nombre
             const fileSize = Number(file.Taille);
             if (isNaN(fileSize) || fileSize < 0) {
                 console.warn(`Taille incorrecte pour le fichier avec ID: ${file.ID_Fichier}`);
-                return acc; // Si la taille est invalide, l'ignorer
+                return acc; // Ignorer les fichiers avec des tailles invalides
             }
             return acc + fileSize;
         }, 0);
 
-        // Envoyer l'usage total (en octets)
-        res.json({ usage: totalUsage });
+        // Récupérer les informations de l'utilisateur, notamment la capacité de stockage
+        const user = await User.findByPk(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'Utilisateur non trouvé.' });
+        }
+
+        // Convertir la capacité de stockage en octets (Go -> octets)
+        const totalStorageInBytes = user.Capacite_stockage * 1024 * 1024 * 1024;
+
+        // Envoyer à la fois l'usage total et la capacité totale de stockage
+        res.json({
+            usage: totalUsage,
+            totalStorageInBytes: totalStorageInBytes
+        });
     } catch (error) {
         console.error('Erreur lors de la récupération de l\'usage du stockage:', error);
         res.status(500).json({ message: 'Erreur lors de la récupération de l\'usage du stockage' });
     }
 });
+
 
 
 app.post('/api/download-invoice', isAuthenticated, async (req, res) => {

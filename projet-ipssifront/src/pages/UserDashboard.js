@@ -7,26 +7,25 @@ import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import '../assets/css/Dashboard.css';
 import axios from 'axios';  // Import d'axios
-
-// Import correct de filesize
 import { filesize } from 'filesize'; // Assurez-vous d'utiliser les accolades
 
 const UserDashboard = () => {
     const [activeTab, setActiveTab] = useState('files');
     const [usage, setUsage] = useState(0);  // Stockage utilisé en octets
-    const totalStorageInBytes = 20 * 1024 * 1024 * 1024;  // Total de stockage en octets (20 Go)
+    const [totalStorageInBytes, setTotalStorageInBytes] = useState(20 * 1024 * 1024 * 1024);  // Total de stockage en octets, initialisé à 20 Go par défaut
 
-    // Fonction globale pour récupérer les données d'usage de l'API
-    const fetchUsage = async () => {
+    // Fonction globale pour récupérer les données d'usage et de capacité de l'API
+    const fetchUsageAndStorage = async () => {
         try {
             const response = await axios.get('http://localhost:5000/api/storage-usage', {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
                 },
             });
-            // Assurez-vous que l'API renvoie la valeur en octets
-            const usageInBytes = parseFloat(response.data.usage);
-            setUsage(usageInBytes);
+            // Assurez-vous que l'API renvoie usage et totalStorageInBytes
+            const { usage: usageInBytes, totalStorageInBytes: totalStorage } = response.data;
+            setUsage(usageInBytes);  // Mettre à jour l'usage actuel
+            setTotalStorageInBytes(totalStorage);  // Mettre à jour la capacité totale de stockage
         } catch (error) {
             console.error("Erreur lors de la récupération de l'usage du stockage", error);
         }
@@ -34,12 +33,12 @@ const UserDashboard = () => {
 
     // Utilisation de useEffect pour récupérer les données d'usage lors du montage
     useEffect(() => {
-        fetchUsage();
+        fetchUsageAndStorage();
     }, []);
 
     // Fonction qui est appelée après un upload réussi
     const handleUploadSuccess = () => {
-        fetchUsage(); // Mise à jour de l'usage après l'upload
+        fetchUsageAndStorage(); // Mise à jour de l'usage après l'upload
     };
 
     // Fonction pour afficher le contenu de l'onglet actif
