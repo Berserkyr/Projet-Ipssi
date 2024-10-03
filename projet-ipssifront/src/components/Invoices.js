@@ -3,10 +3,11 @@ import axios from 'axios';
 import '../assets/css/Invoices.css'; // Assurez-vous que le fichier CSS est bien importé
 
 const Invoices = () => {
-    // États pour gérer les factures, le chargement, et les erreurs
+    // États pour gérer les factures, le chargement, les erreurs et le succès
     const [invoices, setInvoices] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [successMessage, setSuccessMessage] = useState(''); // Nouveau état pour le message de succès
 
     // Utiliser useEffect pour récupérer les factures une seule fois au chargement du composant
     useEffect(() => {
@@ -23,7 +24,6 @@ const Invoices = () => {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                console.log("Factures reçues :", response.data);
                 setInvoices(response.data);
             } catch (err) {
                 setError('Erreur lors de la récupération des factures.');
@@ -38,8 +38,6 @@ const Invoices = () => {
     const handleDownloadInvoice = async (invoiceId) => {
         const token = localStorage.getItem('token');
         try {
-            console.log("Token utilisé:", token);
-            console.log("Invoice ID envoyé:", invoiceId); // Pour vérifier que l'ID est correct
             if (!invoiceId) {
                 console.error("Erreur: invoiceId est undefined ou null.");
                 alert("Impossible de télécharger la facture. ID de facture manquant.");
@@ -67,6 +65,15 @@ const Invoices = () => {
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link); // Nettoyage du DOM
+
+            // Afficher un message de succès après le téléchargement
+            setSuccessMessage('Facture téléchargée avec succès !');
+            
+            // Masquer le message de succès après 5 secondes
+            setTimeout(() => {
+                setSuccessMessage('');
+            }, 5000);
+
         } catch (err) {
             console.error('Erreur lors du téléchargement de la facture', err);
             alert('Erreur lors du téléchargement de la facture.');
@@ -87,14 +94,14 @@ const Invoices = () => {
     return (
         <div>
             <h2>Vos Factures</h2>
+            {successMessage && <p className="success-message">{successMessage}</p>} {/* Affichage du message de succès */}
             <ul>
                 {invoices.length === 0 ? (
                     <p>Aucune facture disponible.</p>
                 ) : (
-                    invoices.map((invoice) => {
-                        console.log("Invoice Objet:", invoice); // Vérifier la structure de chaque facture
+                    invoices.map((invoice, index) => {
                         return (
-                            <li key={invoice.id || `${invoice.clientName}-${invoice.purchaseDate}`}>
+                            <li key={invoice.id || `${invoice.clientName}-${invoice.purchaseDate}-${index}`}>
                                 <strong>Client :</strong> {invoice.clientName} - 
                                 <strong> Montant :</strong> {invoice.priceTTC} - 
                                 <strong> Date :</strong> {invoice.purchaseDate} - 
@@ -103,7 +110,6 @@ const Invoices = () => {
                             </li>
                         );
                     })
-                    
                 )}
             </ul>
         </div>
