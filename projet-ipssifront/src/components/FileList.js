@@ -6,49 +6,55 @@ import '../assets/css/FileList.css';  // Fichier CSS amélioré
 const FileList = () => {
     const [files, setFiles] = useState([]);
     const [error, setError] = useState('');
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [showModal, setShowModal] = useState(false);
-    const [fileToDelete, setFileToDelete] = useState(null);
+    const [page, setPage] = useState(1);  // Pagination - Page actuelle
+    const [totalPages, setTotalPages] = useState(1);  // Nombre total de pages
+    const [showModal, setShowModal] = useState(false); // État pour la modal de confirmation
+    const [fileToDelete, setFileToDelete] = useState(null); // Stocker le fichier à supprimer
 
-    useEffect(() => {
-        const fetchFiles = async () => {
-            try {
-                const response = await axios.get(`http://localhost:5000/api/files?page=${page}`, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
-                setFiles(response.data.files);
-                setTotalPages(response.data.totalPages);
-            } catch (error) {
-                if (error.response) {
-                    setError(`Erreur : ${error.response.data.message}`);
-                } else {
-                    setError('Erreur lors du chargement des fichiers.');
-                }
-            }
-        };
-
-        fetchFiles();
-    }, [page]);
-
-    const handleDelete = async () => {
-        if (!fileToDelete) return;
-
+    // Fonction pour récupérer les fichiers - Déplacée en dehors de useEffect
+    const fetchFiles = async () => {
         try {
-            await axios.delete(`http://localhost:5000/api/files/${fileToDelete}`, {
+            const response = await axios.get(`http://localhost:5000/api/files?page=${page}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
             });
-            setFiles(files.filter(file => file.name !== fileToDelete));
-            setShowModal(false);
-            setFileToDelete(null);
+            setFiles(response.data.files);
+            setTotalPages(response.data.totalPages); // Nombre total de pages
         } catch (error) {
-            setError('Erreur lors de la suppression du fichier.');
+            if (error.response) {
+                setError(`Erreur : ${error.response.data.message}`);
+            } else {
+                setError('Erreur lors du chargement des fichiers.');
+            }
         }
     };
+
+    // Utilisation de useEffect pour charger les fichiers lors du montage du composant ou changement de page
+    useEffect(() => {
+        fetchFiles();
+    }, [page]);
+
+
+// Fonction pour gérer la suppression après confirmation
+const handleDelete = async () => {
+    if (!fileToDelete) return;
+
+    try {
+        await axios.delete(`http://localhost:5000/api/files/${fileToDelete}`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        // Mettre à jour la liste des fichiers après la suppression
+        setFileToDelete(null); // Réinitialiser l'état du fichier à supprimer
+        fetchFiles(); // Rafraîchir la liste des fichiers après la suppression
+        setShowModal(false); // Fermer la modal après suppression
+    } catch (error) {
+        setError('Erreur lors de la suppression du fichier.');
+    }
+};
+
 
     const openConfirmModal = (fileName) => {
         setFileToDelete(fileName);

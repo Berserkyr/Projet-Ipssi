@@ -18,6 +18,7 @@ const fileRoutes = require('./routes/fileRoutes');
 // Importer les routes
 const userRoutes = require('./routes/userRoutes');  // Chemin vers les routes utilisateur
 const adminRoutes = require('./routes/adminRoutes'); // Chemin vers les routes admin
+app.use('/api/files', fileRoutes);
 
 //Config Paypal
 paypal.configure({
