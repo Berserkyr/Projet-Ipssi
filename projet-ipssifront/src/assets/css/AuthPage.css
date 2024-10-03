@@ -1,129 +1,137 @@
 /* Styles communs pour les pages de connexion et d'inscription */
 .auth-page {
-    max-width: 450px;
+    max-width: 500px;
     margin: 50px auto;
-    padding: 20px;
-    background-color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 40px 30px; /* Plus de padding pour donner un espace respirant */
+    background-color: #ffffff; /* Fond blanc propre */
+    border-radius: 15px; /* Coins arrondis pour une apparence moderne */
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1); /* Ombre plus prononcée pour donner de la profondeur */
+    text-align: center; /* Centrer le contenu textuel */
 }
 
+/* Titre principal */
 .auth-page h2 {
-    color: #333;
-    text-align: center;
+    color: #1e3c72; /* Bleu cohérent avec la charte graphique d'ArchiCloud */
+    margin-bottom: 25px;
+    font-size: 2rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Légère ombre pour améliorer la lisibilité */
 }
 
+/* Groupe d'entrée pour label et input */
+.auth-page .input-group {
+    margin-bottom: 20px;
+    text-align: left; /* Aligner le label à gauche pour améliorer la présentation */
+}
+
+/* Label pour chaque input */
+.auth-page .input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333; /* Texte sombre */
+    font-size: 1rem;
+}
+
+/* Champs d'entrée */
 .auth-page input[type="text"],
 .auth-page input[type="email"],
 .auth-page input[type="password"] {
     width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
+    padding: 12px;
     border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
+    border-radius: 8px; /* Coins arrondis pour rester en cohérence avec le reste de l'application */
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Transition douce pour le focus */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
+.auth-page input[type="text"]:focus,
+.auth-page input[type="email"]:focus,
+.auth-page input[type="password"]:focus {
+    border-color: #1e3c72; /* Bordure bleue pour le focus */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    outline: none;
+}
+
+/* Bouton de soumission */
 .auth-page button {
     width: 100%;
-    background-color: #007bff;
+    background-color: #1e3c72; /* Couleur bleue ArchiCloud */
     color: white;
-    padding: 10px;
+    padding: 15px;
     border: none;
-    border-radius: 5px;
-    font-size: 16px;
+    border-radius: 8px; /* Coins arrondis pour une apparence plus moderne */
+    font-size: 1.1rem;
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 20px;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Transition douce */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .auth-page button:hover {
-    background-color: #0056b3;
+    background-color: #2a5298; /* Couleur légèrement plus claire pour l'effet de survol */
+    transform: translateY(-3px); /* Légère translation vers le haut pour dynamiser le bouton */
 }
 
+/* Messages d'erreur ou de succès */
+.auth-page .error {
+    color: #ff4d4d; /* Rouge vif pour les messages d'erreur */
+    font-size: 1rem;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.auth-page .success {
+    color: #28a745; /* Vert pour les messages de succès */
+    font-size: 1rem;
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* Texte supplémentaire, comme "Vous n'avez pas de compte ?" */
 .auth-page p {
     text-align: center;
-    margin-top: 20px;
-    font-size: 14px;
+    margin-top: 25px;
+    font-size: 0.95rem;
+    color: #555; /* Couleur gris pour le texte d'information */
 }
 
 .auth-page p a {
     color: #007bff;
     text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
 }
 
 .auth-page p a:hover {
+    color: #0056b3; /* Couleur plus sombre pour indiquer l'interactivité */
     text-decoration: underline;
 }
 
-/* Message d'erreur ou de succès */
-.error {
-    color: red;
-    font-size: 14px;
-    text-align: center;
-}
+/* Adaptation pour les petits écrans */
+@media (max-width: 600px) {
+    .auth-page {
+        padding: 20px;
+    }
 
-.success {
-    color: green;
-    font-size: 14px;
-    text-align: center;
-}
-.auth-page {
-    max-width: 500px;
-    margin: 50px auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
+    .auth-page h2 {
+        font-size: 1.8rem;
+    }
 
-.auth-page h2 {
-    color: #333;
-    text-align: center;
-    margin-bottom: 20px;
-}
+    .auth-page .input-group label {
+        font-size: 0.9rem;
+    }
 
-.auth-page .input-group {
-    margin-bottom: 15px;
-}
+    .auth-page button {
+        padding: 12px;
+        font-size: 1rem;
+    }
 
-.auth-page .input-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
+    .auth-page p {
+        font-size: 0.9rem;
+    }
 
-.auth-page .input-group input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-}
+    
+    
 
-.auth-page button {
-    width: 100%;
-    background-color: #007bff;
-    color: white;
-    padding: 12px;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.auth-page button:hover {
-    background-color: #0056b3;
-}
-
-.auth-page .error {
-    color: red;
-    font-size: 14px;
-    text-align: center;
-}
-
-.auth-page .success {
-    color: green;
-    font-size: 14px;
-    text-align: center;
 }

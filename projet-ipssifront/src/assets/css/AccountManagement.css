@@ -1,92 +1,101 @@
 /* Conteneur principal de la gestion de compte */
 .account-management {
     max-width: 600px;
-    margin: 40px auto; /* Espacement plus grand en haut pour aérer */
-    padding: 30px;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s ease; /* Transition douce sur l'ombre */
+    margin: 60px auto; /* Espacement vertical plus important pour aérer */
+    padding: 40px 30px; /* Plus de padding pour un confort visuel accru */
+    background-color: #ffffff;
+    border-radius: 15px; /* Coins arrondis pour un look moderne et agréable */
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1); /* Ombre légère pour donner de la profondeur */
+    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Transition douce sur l'ombre et la transformation */
 }
 
 .account-management:hover {
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15); /* Augmentation de l'ombre au survol */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); /* Ombre plus prononcée au survol */
+    transform: translateY(-3px); /* Légère élévation au survol pour dynamiser */
 }
 
 /* Titre principal */
-h2 {
+.account-management h2 {
     text-align: center;
-    font-size: 1.8rem;
-    margin-bottom: 25px;
-    color: #333;
-    font-weight: 600;
+    font-size: 2rem;
+    margin-bottom: 30px;
+    color: #1e3c72; /* Couleur bleue ArchiCloud */
+    font-weight: bold;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ajouter une légère ombre pour améliorer la lisibilité */
 }
 
 /* Informations de l'utilisateur */
 .user-info p {
     font-size: 1.1rem;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     color: #555;
-    line-height: 1.6;
+    line-height: 1.8;
 }
 
 /* Messages d'erreur et de succès */
 .error, .success {
-    font-size: 1.1rem;
-    padding: 10px;
-    border-radius: 8px;
-    margin-bottom: 20px;
+    font-size: 1rem;
+    padding: 15px;
+    border-radius: 10px; /* Coins arrondis pour plus de douceur */
+    margin-bottom: 25px;
+    text-align: center; /* Centrer le texte */
+    font-weight: bold;
 }
 
 .error {
     color: #d9534f;
     background-color: #f8d7da;
     border: 1px solid #f5c6cb;
-    text-align: center;
 }
 
 .success {
     color: #28a745;
     background-color: #d4edda;
     border: 1px solid #c3e6cb;
-    text-align: center;
 }
 
 /* Bouton de suppression de compte */
 .delete-btn {
     width: 100%;
-    background-color: #dc3545;
+    background-color: #ff4d4d; /* Rouge vif pour indiquer l'importance de l'action */
     color: white;
-    padding: 12px;
+    padding: 15px;
     font-size: 1.1rem;
     border: none;
-    border-radius: 8px; /* Bordure plus arrondie pour un look moderne */
+    border-radius: 10px; /* Coins arrondis pour une apparence plus douce */
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    margin-top: 25px;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease; /* Effets de transition */
+    margin-top: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Ombre douce pour le bouton */
 }
 
 .delete-btn:hover {
-    background-color: #c82333;
+    background-color: #c82333; /* Couleur légèrement plus foncée pour l'effet de survol */
     transform: translateY(-2px); /* Légère mise en avant au survol */
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15); /* Ombre plus prononcée au survol */
 }
 
 .delete-btn:active {
     transform: translateY(0); /* Réinitialisation lors du clic */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Réduire l'ombre lorsqu'on appuie sur le bouton */
 }
 
 /* Responsivité */
 @media (max-width: 768px) {
     .account-management {
-        padding: 20px;
+        padding: 25px;
     }
 
-    h2 {
-        font-size: 1.6rem;
+    .account-management h2 {
+        font-size: 1.8rem;
+    }
+
+    .user-info p {
+        font-size: 1rem;
     }
 
     .delete-btn {
-        padding: 10px;
+        padding: 12px;
         font-size: 1rem;
     }
 }
