@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const User = require('./User'); // Associer le modèle utilisateur
 
 const File = sequelize.define('File', {
     ID_Fichier: {
@@ -22,17 +21,11 @@ const File = sequelize.define('File', {
     },
     ID_Utilisateur: {
         type: DataTypes.INTEGER,
-        allowNull: true,
-        references: {
-            model: 'utilisateur',
-            key: 'ID_Utilisateur',
-        },
+        allowNull: false,
     },
 }, {
     tableName: 'fichier',
-    timestamps: false,  // Désactiver les timestamps automatiques (createdAt, updatedAt)
+    timestamps: false,
 });
-// Définir la relation
-File.belongsTo(User, { foreignKey: 'ID_Utilisateur' });
 
 module.exports = File;

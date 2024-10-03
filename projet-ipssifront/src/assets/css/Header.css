@@ -1,32 +1,35 @@
 /* Style du header */
 .header {
-    background-color: #333;
-    padding: 15px 30px;
+    background: linear-gradient(90deg, #1e3c72, #2a5298); /* Dégradé élégant de bleu pour un header moderne */
+    padding: 20px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Ombre un peu plus marquée pour le header */
     position: relative;
-    z-index: 1000; /* S'assurer que le header reste au-dessus du reste */
-    transition: background-color 0.3s ease; /* Transition pour un changement de couleur fluide */
+    z-index: 1000;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Transitions pour un effet fluide */
 }
 
 .header:hover {
-    background-color: #2c2c2c; /* Légère variation au survol */
+    background: linear-gradient(90deg, #1b3a6f, #254e8e); /* Légère variation au survol pour accentuer le header */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* Augmentation de l'ombre pour un effet de survol subtil */
 }
 
 /* Logo du header */
 .header-logo h1 {
-    font-size: 2rem; /* Taille augmentée pour un logo plus visible */
+    font-size: 2.2rem; /* Taille augmentée pour un impact plus fort */
     margin: 0;
     font-weight: bold;
-    letter-spacing: 1px; /* Espacement pour une meilleure lisibilité */
-    transition: transform 0.3s ease; /* Effet sur le logo au survol */
+    letter-spacing: 1.2px; /* Espacement accentué pour une meilleure lisibilité */
+    color: #f1f1f1; /* Légèrement moins blanc pour adoucir le contraste */
+    transition: transform 0.3s ease, color 0.3s ease; /* Effets au survol */
 }
 
 .header-logo h1:hover {
-    transform: scale(1.05); /* Mise en avant légère au survol */
+    transform: scale(1.08); /* Mise en avant plus visible au survol */
+    color: #ffffff; /* Accentuation du contraste au survol */
 }
 
 /* Navigation du header */
@@ -35,8 +38,8 @@
     margin: 0;
     padding: 0;
     display: flex;
-    gap: 30px; /* Plus d'espacement entre les liens */
-    align-items: center; /* Centrage vertical des liens */
+    gap: 35px; /* Plus d'espacement entre les liens */
+    align-items: center;
 }
 
 .header-nav ul li {
@@ -45,42 +48,44 @@
 
 /* Style des liens du header */
 .header-nav ul li a {
-    color: white;
+    color: #f1f1f1;
     text-decoration: none;
-    font-size: 1.1rem; /* Taille de police légèrement plus grande */
-    font-weight: 500;
-    padding: 10px;
+    font-size: 1.15rem; /* Taille de police légèrement plus grande */
+    font-weight: 600; /* Plus gras pour une meilleure visibilité */
+    padding: 12px;
     position: relative;
     transition: color 0.3s ease, border-bottom 0.3s ease, transform 0.3s ease;
 }
 
 .header-nav ul li a:hover {
-    color: #007bff;
-    border-bottom: 2px solid #007bff; /* Soulignement bleu au survol */
-    transform: translateY(-2px); /* Effet de déplacement au survol */
+    color: #00bcd4; /* Bleu cyan lumineux au survol */
+    border-bottom: 2px solid #00bcd4; /* Soulignement cyan au survol */
+    transform: translateY(-3px); /* Déplacement vertical accentué au survol */
 }
 
 /* Style du bouton de déconnexion */
 .logout-btn {
     background-color: transparent;
-    border: 1px solid #fff;
+    border: 2px solid #ffffff; /* Augmenté pour donner une présence plus forte */
     color: white;
     font-size: 1rem;
-    padding: 10px 20px; /* Plus d'espace pour améliorer l'apparence */
+    padding: 12px 25px; /* Espacement augmenté pour un look plus premium */
     cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+    border-radius: 8px; /* Arrondis plus accentués */
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .logout-btn:hover {
-    background-color: #ff4d4d;
-    border-color: #ff4d4d;
+    background-color: #e74c3c; /* Rouge vif pour bien signaler l'action de déconnexion */
+    border-color: #e74c3c;
     color: white;
-    transform: scale(1.05); /* Légère mise en avant au survol */
+    transform: scale(1.08); /* Mise en avant plus accentuée */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Ombre pour renforcer l'effet de survol */
 }
 
 .logout-btn:active {
     transform: scale(0.95); /* Effet d'enfoncement lors du clic */
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2); /* Ombre réduite pour l'effet d'enfoncement */
 }
 
 /* Responsivité pour mobile */
@@ -88,23 +93,23 @@
     .header {
         flex-direction: column;
         align-items: flex-start;
-        padding: 15px;
+        padding: 20px;
     }
 
     .header-logo h1 {
-        font-size: 1.8rem;
-        margin-bottom: 10px;
+        font-size: 1.9rem;
+        margin-bottom: 15px;
     }
 
     .header-nav ul {
         flex-direction: column;
         align-items: flex-start;
-        gap: 15px; /* Moins d'espace entre les éléments sur mobile */
+        gap: 20px; /* Moins d'espace entre les éléments sur mobile */
     }
 
     .logout-btn {
         width: 100%;
         text-align: center; /* Bouton centré sur toute la largeur en mobile */
-        margin-top: 10px;
+        margin-top: 15px;
     }
 }

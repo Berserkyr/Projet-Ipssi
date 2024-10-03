@@ -6,7 +6,7 @@ const Header = ({ onLogout }) => {
     return (
         <header className="header">
             <div className="header-logo">
-                <h1>Mon Application</h1>
+                <h1>ArchiCloud</h1>
             </div>
             <nav className="header-nav">
                 <ul>

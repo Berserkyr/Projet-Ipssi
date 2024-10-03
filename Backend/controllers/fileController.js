@@ -7,34 +7,38 @@ const path = require('path');  // Module pour les chemins de fichiers
 // 1. Fonction pour uploader un fichier
 // ===============================
 exports.uploadFile = async (req, res) => {
-    // Vérifier si un fichier a été uploadé
-    if (!req.file) {
-        return res.status(400).json({ message: 'Aucun fichier uploadé.' });
-    }
-
-    try {
-        console.log('Fichier reçu:', req.file);
-        console.log('Début de l\'upload du fichier:', req.file);
-
-        // Ajouter le fichier dans la base de données avec Sequelize
-        const newFile = await File.create({
-            Nom_fichier: req.file.filename,  // Nom du fichier uploadé
-            Taille: req.file.size,  // Taille du fichier
-            ID_Utilisateur: req.body.userId || 1,  // Utilisateur par défaut ou utilisateur spécifié
-            Date_upload: new Date()  // Date actuelle pour le téléchargement
-        });
-        console.log('Fichier enregistré dans la base de données:', newFile);
-
-        // Répondre avec succès et les informations du fichier
-        res.status(200).json({
-            message: 'Fichier uploadé avec succès',
-            file: newFile
-        });
-    } catch (error) {
-        console.error('Erreur lors de l\'upload du fichier', error);
-        res.status(500).json({ message: 'Erreur lors de l\'upload du fichier.' });
-    }
-};
+        if (!req.file) {
+            return res.status(400).json({ message: 'Aucun fichier sélectionné ou type de fichier non valide.' });
+        }
+        try {
+            const user = await User.findByPk(req.userId);
+            if (!user) {
+                return res.status(404).json({ message: 'Utilisateur non trouvé.' });
+            }
+            const userFiles = await File.findAll({ where: { ID_Utilisateur: req.userId } });        
+            let totalUsedSpace = 0;
+            userFiles.forEach(file => {
+                const fileSize = parseInt(file.Taille, 10); 
+                totalUsedSpace += fileSize; // Ajout de la taille au total
+            });
+            // Convertir la capacité de stockage en octets
+            const availableSpace = user.Capacite_stockage * 1024 * 1024 * 1024; // 1 Go = 1024*1024*1024 octets
+            if (totalUsedSpace + req.file.size > availableSpace) {
+                return res.status(400).json({ message: 'Capacité de stockage dépassée. Supprimez des fichiers ou achetez plus d\'espace.' });
+            }
+            const newFile = await File.create({
+                Nom_fichier: req.file.filename,
+                Taille: req.file.size,
+                ID_Utilisateur: req.userId,
+                Date_upload: new Date(),
+            });
+            res.json({ message: 'Fichier uploadé et enregistré avec succès.', file: newFile });
+        } catch (error) {
+            res.status(500).json({ message: 'Erreur lors de l\'enregistrement du fichier dans la base de données.' });
+        }
+    };
+    
+    
 // ===============================
 // 2. Récupérer tous les fichiers pour un utilisateur (avec informations complètes)
 // ===============================

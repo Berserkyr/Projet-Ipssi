@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import '../assets/css/AuthPage.css';
 
-const LoginPage = ({ setIsAuthenticated, onLogin }) => {  
+const LoginPage = ({ setIsAuthenticated }) => {  
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState(''); 
     const [error, setError] = useState('');
@@ -25,10 +25,31 @@ const LoginPage = ({ setIsAuthenticated, onLogin }) => {
             if (token) {
                 localStorage.setItem('token', token);
                 console.log('Token stocké dans le localStorage:', token);  // Log pour vérifier le stockage du token
+
+                // Décoder le payload du token JWT pour obtenir le rôle de l'utilisateur
+                const decodedToken = JSON.parse(atob(token.split('.')[1]));
+                const userRole = decodedToken.role;  // Extraction du rôle
+                
+                console.log('Rôle de l\'utilisateur:', userRole);  // Log pour vérifier le rôle extrait
+
+                localStorage.setItem('role', userRole);  // Stocker le rôle dans localStorage
+
+                setSuccess('Connexion réussie !');
     
                 // OTP step
                 setSuccess('Connexion réussie ! Veuillez vérifier votre OTP.');
                 setError('');
+                setIsAuthenticated(true);
+                console.log('Token:', localStorage.getItem('token'));
+console.log('Rôle:', localStorage.getItem('role'));
+
+
+                // Rediriger en fonction du rôle de l'utilisateur
+                if (userRole === 'admin') {
+                    navigate('/admin');
+                } else {
+                    navigate('/dashboard');
+                }
                 navigate('/verify-otp', { state: { email } });
             } else {
                 setError('Erreur de connexion');

@@ -1,7 +1,6 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');  // Assurez-vous que le fichier de configuration est correct
+const sequelize = require('../config/database');
 
-// Définition du modèle Invoice avec Sequelize
 const Invoice = sequelize.define('Invoice', {
     id: {
         type: DataTypes.INTEGER,
@@ -53,12 +52,12 @@ const Invoice = sequelize.define('Invoice', {
         allowNull: true,
     },
 }, {
-    timestamps: true,  // Ajoute les colonnes createdAt et updatedAt automatiquement
-    tableName: 'invoices', // Nom de la table dans la base de données
+    timestamps: true,  
+    tableName: 'invoices',  
 });
 
-// Synchronisation avec la base de données (créer la table si elle n'existe pas encore)
-sequelize.sync()
+
+sequelize.sync({ alter: true })  
     .then(() => {
         console.log('Table des factures synchronisée avec succès.');
     })

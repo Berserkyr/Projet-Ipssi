@@ -1,81 +1,214 @@
-.file-item {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.8), rgba(240, 240, 240, 0.5)); /* Dégradé doux */
-    -webkit-backdrop-filter: blur(15px); /* Effet de flou plus subtil */
-    backdrop-filter: blur(10px);
-    border-radius: 20px; /* Coins plus arrondis pour un look plus organique */
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1), 0 1px 4px rgba(0, 0, 0, 0.05); /* Ombres douces et légères */
-    
-    padding: 30px; /* Espacement plus généreux */
-    margin-bottom: 25px;
+/* Conteneur principal de la liste de fichiers */
+.file-list-container {
+    padding: 40px;
+    background-color: #f9f9f9; /* Fond clair pour la distinction */
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    
-    /* Ajout de bordures fines pour éviter l'effet de boîte dans boîte */
-    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.file-item:hover {
-    transform: translateY(-8px); /* Mise en avant plus visible au survol */
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.05);
+/* Titre principal */
+.file-list-title {
+    font-size: 2.5rem;
+    color: #1e3c72; /* Couleur cohérente avec la charte d'ArchiCloud */
+    margin-bottom: 20px;
+    text-align: center;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Message d'erreur */
+.error-message {
+    color: #ff4d4d;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Contrôles de recherche, tri, et filtre */
+.file-controls {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+    width: 100%;
+    max-width: 800px;
+    justify-content: center;
+    flex-wrap: wrap; /* Pour gérer l'espace sur les petits écrans */
+}
+
+.file-controls input[type="text"],
+.file-controls select {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: border-color 0.3s ease;
+    background-color: #ffffff;
+}
+
+.file-controls input[type="text"]:focus,
+.file-controls select:focus {
+    border-color: #1e3c72;
+    outline: none;
+}
+
+/* Liste de fichiers */
+.file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 800px;
+}
+
+/* Carte de fichier */
+.file-card {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.file-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
 }
 
 /* Informations du fichier */
 .file-info {
-    font-size: 1.3rem;
     margin-bottom: 15px;
-    color: #444; /* Couleur plus douce et moderne */
-    text-align: center;
-    font-weight: 500;
 }
 
-/* Prévisualisation */
+.file-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.file-size,
+.file-date {
+    font-size: 1rem;
+    color: #666;
+}
+
+/* Prévisualisation des fichiers */
 .file-preview {
-    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
 }
 
 .file-image {
-    width: 120px;
-    height: auto;
-    border-radius: 12px; /* Coins plus arrondis */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Ombre subtile sur l'image */
+    max-width: 150px;
+    max-height: 100px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Bouton de visualisation */
 .file-view-btn {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 12px 25px;
-    font-size: 1rem;
-    border-radius: 50px; /* Bouton plus arrondi pour un look moderne */
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    margin-top: 10px;
     text-decoration: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Ombre douce */
+    background-color: #1e3c72;
+    color: white;
+    font-weight: bold;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .file-view-btn:hover {
-    background-color: #0056b3;
-    transform: scale(1.05); /* Mise en avant douce au survol */
+    background-color: #2a5298;
+    transform: translateY(-3px);
 }
 
 /* Bouton de suppression */
 .delete-btn {
-    background-color: #dc3545;
+    padding: 10px 15px;
+    margin-top: 20px;
+    background-color: #ff4d4d;
     color: white;
     border: none;
-    padding: 12px 25px;
-    font-size: 1rem;
-    border-radius: 50px; /* Arrondi similaire au bouton de vue */
+    border-radius: 8px;
+    font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    margin-top: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .delete-btn:hover {
-    background-color: #c82333;
-    transform: scale(1.05);
+    background-color: #ff1a1a;
+    transform: translateY(-3px);
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.pagination-btn {
+    padding: 10px 20px;
+    background-color: #1e3c72;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: bold;
+}
+
+.pagination-btn:hover {
+    background-color: #2a5298;
+}
+
+.pagination-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.pagination-btn.active {
+    background-color: #00bcd4; /* Couleur pour indiquer la page actuelle */
+}
+
+/* Aucune liste de fichiers disponible */
+.no-files {
+    font-size: 1.2rem;
+    color: #666;
+    text-align: center;
+    margin-top: 40px;
+}
+
+/* Style spécifique pour les petits écrans */
+@media (max-width: 768px) {
+    .file-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+
+    .file-card {
+        padding: 15px;
+    }
+
+    .file-preview {
+        flex-direction: column;
+    }
+
+    .delete-btn {
+        width: 100%;
+    }
+
+    .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 5px;
+    }
 }

@@ -1,61 +1,65 @@
 /* Conteneur principal du footer */
 .footer {
-    background-color: #333;
+    background: linear-gradient(90deg, #2c3e50, #4c5b70); /* Dégradé sombre avec une teinte de bleu pour un look moderne */
     color: white;
-    padding: 20px 0;
+    padding: 30px 0;
     text-align: center;
     position: relative;
     bottom: 0;
     width: 100%;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.2); /* Ombre plus prononcée pour démarquer le footer */
     z-index: 100;
 }
 
 /* Texte de copyright */
 .footer p {
     margin: 0;
-    padding-bottom: 10px;
-    font-size: 14px;
-    color: #ccc;
-    line-height: 1.6;
+    padding-bottom: 15px;
+    font-size: 15px;
+    color: #b0bec5; /* Gris plus doux pour le texte secondaire */
+    line-height: 1.8;
+    letter-spacing: 0.5px; /* Espacement des lettres pour une meilleure lisibilité */
 }
 
 /* Conteneur des liens du footer */
 .footer-links {
     display: flex;
     justify-content: center;
-    align-items: center; /* Centrage vertical des liens */
-    gap: 30px; /* Espace entre chaque lien */
-    margin-top: 10px;
+    align-items: center;
+    gap: 35px; /* Plus d'espace entre chaque lien pour une meilleure visibilité */
+    margin-top: 15px;
 }
 
 /* Style pour les liens du footer */
 .footer-links a {
     text-decoration: none;
-    color: #fff;
-    font-size: 16px;
-    transition: color 0.3s ease, transform 0.2s ease; /* Ajout de transition sur la couleur et transformation */
-    font-weight: 500;
+    color: #f1f1f1;
+    font-size: 17px;
+    transition: color 0.3s ease, transform 0.3s ease; /* Transition plus douce pour un effet plus fluide */
+    font-weight: 600; /* Légèrement plus gras pour attirer l'attention */
 }
 
-/* Effet hover sur les liens */
 .footer-links a:hover {
-    color: #007bff; /* Change la couleur au survol */
-    transform: scale(1.05); /* Légère mise en avant au survol */
+    color: #00bcd4; /* Cyan vif pour attirer l'œil au survol */
+    transform: translateY(-3px); /* Déplacement vertical pour un effet plus dynamique */
 }
 
 /* Réglage des styles pour les petits écrans */
 @media (max-width: 600px) {
+    .footer {
+        padding: 20px 0;
+    }
+
     .footer-links {
         flex-direction: column;
-        gap: 15px; /* Espacement réduit sur mobile */
+        gap: 20px; /* Espacement augmenté légèrement sur mobile pour rendre les liens plus accessibles */
     }
 
     .footer p {
-        font-size: 12px;
+        font-size: 13px;
     }
 
     .footer-links a {
-        font-size: 14px;
+        font-size: 15px;
     }
 }

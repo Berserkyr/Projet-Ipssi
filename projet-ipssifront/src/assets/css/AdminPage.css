@@ -1,0 +1,223 @@
+/* AdminPage.css */
+
+.admin-page {
+    padding: 2rem;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to bottom right, #e0eafc, #cfdef3); /* Arrière-plan dégradé doux */
+    color: #333;
+    line-height: 1.6;
+    min-height: 100vh; /* S'assurer que la page couvre toute la hauteur */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Titre principal */
+.admin-page h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    color: #2c3e50; /* Bleu marine pour un bon contraste */
+    margin-bottom: 2rem;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1); /* Ajouter une ombre légère au texte */
+}
+
+/* Paragraphe d'introduction */
+.admin-page p {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    color: #555;
+    font-size: 1.1rem;
+}
+
+/* Liste des utilisateurs */
+.user-list {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 16px; /* Arrondir plus pour un effet doux */
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
+    margin-bottom: 2.5rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.user-list:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.user-list h3 {
+    margin-bottom: 1.5rem;
+    color: #2c3e50;
+    font-size: 1.75rem;
+    text-align: center;
+}
+
+/* Tableau des utilisateurs */
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.user-table thead {
+    background: #34495e; /* Bleu foncé sophistiqué */
+    color: white;
+    text-transform: uppercase;
+    font-size: 1rem;
+}
+
+.user-table th, .user-table td {
+    padding: 1rem;
+    text-align: center;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.user-table th {
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+}
+
+.user-table th:hover {
+    background: #2c3e50; /* Couleur de survol pour les en-têtes */
+}
+
+.user-table tr:nth-child(even) {
+    background: #f8f9fa; /* Légèrement gris pour plus de douceur */
+}
+
+.user-table tr:hover {
+    background: #ecf0f1;
+    transition: background-color 0.3s ease;
+}
+
+.user-table td {
+    font-size: 1rem;
+    color: #555;
+}
+
+/* Actions */
+.actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    font-weight: bold;
+}
+
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    opacity: 0.95;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    background-color: #bcbcbc;
+}
+
+/* Boutons spécifiques */
+.view-files-btn {
+    background-color: #3498db; /* Bleu vif pour attirer l'attention */
+    color: white;
+}
+
+.delete-btn {
+    background-color: #e74c3c; /* Rouge vif mais élégant */
+    color: white;
+}
+
+.change-role-btn {
+    background-color: #f39c12; /* Orange lumineux */
+    color: #333;
+}
+
+/* Pagination */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+.pagination-controls button {
+    background-color: #3498db; /* Bleu cohérent avec le reste du design */
+    color: white;
+    margin: 0 0.75rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 6px;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.pagination-controls button:hover {
+    background-color: #2980b9;
+}
+
+.pagination-controls span {
+    font-size: 1.2rem;
+    color: #333;
+}
+
+/* Liste des fichiers utilisateurs */
+.user-files {
+    margin-top: 2.5rem;
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.user-files:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.user-files h3 {
+    margin-bottom: 1.5rem;
+    color: #2c3e50;
+    font-size: 1.75rem;
+    text-align: center;
+}
+
+.user-files ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.user-files li {
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.user-files li:hover {
+    transform: translateY(-3px);
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.user-files a {
+    color: #3498db;
+    text-decoration: none;
+    margin-left: 0.75rem;
+    font-weight: 500;
+}
+
+.user-files a:hover {
+    text-decoration: underline;
+    color: #2980b9;
+}

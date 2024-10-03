@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const File = require('../models/File');
-const { Invoice, invoices } = require('../models/Invoice');
+const Invoice = require('../models/invoices');
+
 const fs = require('fs');
 const path = require('path');
 

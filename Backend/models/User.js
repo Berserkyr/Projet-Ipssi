@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
+const File = require('./File');
 
 const User = sequelize.define('User', {
     ID_Utilisateur: {
@@ -28,17 +29,9 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    Ville: {
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
-    Date_inscription: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-    },
     role: {
         type: DataTypes.STRING,
-        defaultValue: 'user',  // Le rôle par défaut est 'user'
+        defaultValue: 'user',
     },
     // Nouveau champ pour stocker l'OTP
     OTP: {
@@ -50,10 +43,18 @@ const User = sequelize.define('User', {
         type: DataTypes.DATE,
         allowNull: true,
     },
+    Capacite_stockage: { 
+        type: DataTypes.INTEGER,
+        defaultValue: 0, 
+        allowNull: false,
+    },
 }, {
     tableName: 'utilisateur',
     timestamps: false,
 });
+
+User.hasMany(File, { foreignKey: 'ID_Utilisateur' });
+File.belongsTo(User, { foreignKey: 'ID_Utilisateur' });
 
 module.exports = User;
 

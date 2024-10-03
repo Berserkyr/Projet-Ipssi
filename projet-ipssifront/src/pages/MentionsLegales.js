@@ -1,5 +1,6 @@
 import React from 'react';
 import '../assets/css/MentionsLegales.css';
+
 const MentionsLegales = () => {
     return (
         <div className="mentions-legales">
@@ -8,10 +9,10 @@ const MentionsLegales = () => {
             <section>
                 <h2>Éditeur du site</h2>
                 <p>
-                    <strong>Nom de l'entreprise :</strong> Mon Application<br />
+                    <strong>Nom de l'entreprise :</strong> ArchiCloud<br />
                     <strong>Adresse :</strong> 456 Avenue des Champs-Élysées, Paris<br />
                     <strong>Téléphone :</strong> +33 1 23 45 67 89<br />
-                    <strong>Email :</strong> contact@monapp.com<br />
+                    <strong>Email :</strong> contact@archicloud.com<br />
                     <strong>SIRET :</strong> 123 456 789 00010
                 </p>
             </section>
@@ -28,16 +29,16 @@ const MentionsLegales = () => {
             <section>
                 <h2>Propriété intellectuelle</h2>
                 <p>
-                    Tous les contenus présents sur ce site, incluant, de façon non limitative, les graphismes, images, textes, vidéos, animations, sons, logos, gifs et icônes ainsi que leur mise en forme sont la propriété exclusive de Mon Application, à l'exception des marques, logos ou contenus appartenant à d'autres sociétés partenaires ou auteurs.
+                    Tous les contenus présents sur ce site, incluant, de façon non limitative, les graphismes, images, textes, vidéos, animations, sons, logos, gifs et icônes ainsi que leur mise en forme sont la propriété exclusive de ArchiCloud, à l'exception des marques, logos ou contenus appartenant à d'autres sociétés partenaires ou auteurs.
                 </p>
             </section>
 
             <section>
                 <h2>Données personnelles</h2>
                 <p>
-                    Les informations recueillies sur ce site sont enregistrées dans un fichier informatisé par Mon Application pour la gestion des utilisateurs. Elles sont conservées pendant une durée de 3 ans et sont destinées à l’équipe de Mon Application.
+                    Les informations recueillies sur ce site sont enregistrées dans un fichier informatisé par ArchiCloud pour la gestion des utilisateurs. Elles sont conservées pendant une durée de 3 ans et sont destinées à l’équipe de ArchiCloud.
                     <br />
-                    Conformément à la loi « informatique et libertés », vous pouvez exercer votre droit d'accès aux données vous concernant et les faire rectifier en contactant : <strong>contact@monapp.com</strong>
+                    Conformément à la loi « informatique et libertés », vous pouvez exercer votre droit d'accès aux données vous concernant et les faire rectifier en contactant : <strong>contact@archicloud.com</strong>
                 </p>
             </section>
 
@@ -51,14 +52,14 @@ const MentionsLegales = () => {
             <section>
                 <h2>Limitation de responsabilité</h2>
                 <p>
-                    Mon Application ne pourra être tenue responsable des dommages directs et indirects causés au matériel de l’utilisateur, lors de l’accès au site <strong>monapp.com</strong>.
+                    ArchiCloud ne pourra être tenue responsable des dommages directs et indirects causés au matériel de l’utilisateur, lors de l’accès au site <strong>archicloud.com</strong>.
                 </p>
             </section>
 
             <section>
                 <h2>Litiges</h2>
                 <p>
-                    Les présentes conditions du site <strong>monapp.com</strong> sont régies par les lois françaises. En cas de litige, et à défaut d'accord amiable, les tribunaux français seront seuls compétents.
+                    Les présentes conditions du site <strong>archicloud.com</strong> sont régies par les lois françaises. En cas de litige, et à défaut d'accord amiable, les tribunaux français seront seuls compétents.
                 </p>
             </section>
         </div>

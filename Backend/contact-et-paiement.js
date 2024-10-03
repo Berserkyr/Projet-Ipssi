@@ -11,7 +11,7 @@ paypal.configure({
     'mode': 'sandbox', 
     'client_id': process.env.PAYPAL_CLIENT_ID,
     'client_secret': process.env.PAYPAL_CLIENT_SECRET
-});
+}); 
 
 
 const app = express();
@@ -129,7 +129,7 @@ const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: process.env.MAIL,
-        pass: process.env.MPASSWORDD
+        pass: process.env.MDP_GG
     }
 });
 
@@ -157,3 +157,6 @@ const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
+
+

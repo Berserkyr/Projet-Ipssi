@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ConfirmModal from './ConfirmModal'; // Importer la modal personnalisée
-import '../assets/css/FileList.css';  // Import du fichier CSS
+import '../assets/css/FileList.css';  // Fichier CSS amélioré
 
 const FileList = () => {
     const [files, setFiles] = useState([]);
@@ -10,94 +10,179 @@ const FileList = () => {
     const [totalPages, setTotalPages] = useState(1);  // Nombre total de pages
     const [showModal, setShowModal] = useState(false); // État pour la modal de confirmation
     const [fileToDelete, setFileToDelete] = useState(null); // Stocker le fichier à supprimer
+    const [sortOption, setSortOption] = useState('name'); // Option de tri
+    const [searchTerm, setSearchTerm] = useState(''); // Terme de recherche pour les fichiers
+    const [fileTypeFilter, setFileTypeFilter] = useState('all'); // Filtre pour le type de fichier
 
-    useEffect(() => {
-        const fetchFiles = async () => {
-            try {
-                const response = await axios.get(`http://localhost:5000/api/files?page=${page}`, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
-                setFiles(response.data.files);
-                setTotalPages(response.data.totalPages); // Nombre total de pages
-            } catch (error) {
+    // Fonction pour récupérer les fichiers - Déplacée en dehors de useEffect
+    const fetchFiles = async () => {
+        try {
+            const response = await axios.get(`http://localhost:5000/api/files?page=${page}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            setFiles(response.data.files);
+            setTotalPages(response.data.totalPages); // Nombre total de pages
+        } catch (error) {
+            if (error.response) {
+                setError(`Erreur : ${error.response.data.message}`);
+            } else {
                 setError('Erreur lors du chargement des fichiers.');
             }
-        };
+        }
+    };
 
+    // Utilisation de useEffect pour charger les fichiers lors du montage du composant ou changement de page
+    useEffect(() => {
         fetchFiles();
     }, [page]);
 
     // Fonction pour gérer la suppression après confirmation
     const handleDelete = async () => {
+        if (!fileToDelete) return;
+
         try {
             await axios.delete(`http://localhost:5000/api/files/${fileToDelete}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
             });
-            setFiles(files.filter(file => file.name !== fileToDelete)); // Suppression locale du fichier
+            setFileToDelete(null); // Réinitialiser l'état du fichier à supprimer
+            fetchFiles(); // Rafraîchir la liste des fichiers après la suppression
             setShowModal(false); // Fermer la modal après suppression
         } catch (error) {
             setError('Erreur lors de la suppression du fichier.');
         }
     };
 
-    // Fonction pour ouvrir la modal
-    const openConfirmModal = (fileName) => {
-        setFileToDelete(fileName); // Définir le fichier à supprimer
-        setShowModal(true); // Ouvrir la modal
+    // Ouvre la modal et passe l'ID du fichier à supprimer
+    const openConfirmModal = (fileId) => {
+        setFileToDelete(fileId);
+        setShowModal(true);
     };
 
-    // Fonction pour déterminer si un fichier est une image
-    const isImageFile = (fileName) => {
-        return /\.(jpeg|jpg|png|gif)$/i.test(fileName);
+    const isImageFile = (fileName) => /\.(jpeg|jpg|png|gif)$/i.test(fileName);
+    const isPdfFile = (fileName) => /\.pdf$/i.test(fileName);
+
+    // Fonction pour obtenir la prévisualisation d'un fichier
+    const getFilePreview = (file) => {
+        if (isImageFile(file.name)) {
+            return <img src={file.url} alt={file.name} className="file-image" />;
+        } else if (isPdfFile(file.name)) {
+            return (
+                <a href={file.url} target="_blank" rel="noopener noreferrer" className="file-view-btn">
+                    <i className="fa fa-file-pdf"></i> Visualiser le PDF
+                </a>
+            );
+        } else {
+            return (
+                <a href={file.url} target="_blank" rel="noopener noreferrer" className="file-view-btn">
+                    <i className="fa fa-download"></i> Télécharger le fichier
+                </a>
+            );
+        }
     };
 
-    // Fonction pour déterminer si un fichier est un PDF
-    const isPdfFile = (fileName) => {
-        return /\.pdf$/i.test(fileName);
+// Fonction pour trier les fichiers
+const sortFiles = (files, sortOption, sortOrder) => {
+    return [...files].sort((a, b) => {
+        let comparison = 0;
+        switch (sortOption) {
+            case 'name':
+                comparison = a.name.localeCompare(b.name);
+                break;
+            case 'size':
+                comparison = a.size - b.size;
+                break;
+            case 'date':
+                comparison = new Date(a.uploadDate) - new Date(b.uploadDate);
+                break;
+            default:
+                return 0;
+        }
+        return sortOrder === 'asc' ? comparison : -comparison;
+    });
+};
+
+
+    // Fonction pour filtrer les fichiers en fonction du terme de recherche et du type de fichier
+    const filterFiles = (files) => {
+        return files.filter((file) => {
+            const matchesSearchTerm = file.name.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesFileType = fileTypeFilter === 'all' ||
+                (fileTypeFilter === 'images' && isImageFile(file.name)) ||
+                (fileTypeFilter === 'pdf' && isPdfFile(file.name));
+            return matchesSearchTerm && matchesFileType;
+        });
     };
+
+    // Appliquer tri et filtres aux fichiers
+    const sortedAndFilteredFiles = sortFiles(filterFiles(files), sortOption);
 
     return (
         <div className="file-list-container">
-            <h3>Mes fichiers</h3>
+            <h2 className="file-list-title">Mes Fichiers</h2>
             {error && <p className="error-message">{error}</p>}
 
-            <ul className="file-list">
-                {files.length > 0 ? (
-                    files.map((file, index) => {
-                        const uniqueKey = file.id || file.name || index;
+            {/* Menu de recherche et de tri */}
+            <div className="file-controls">
+                <input
+                    type="text"
+                    placeholder="Rechercher par nom"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <select value={fileTypeFilter} onChange={(e) => setFileTypeFilter(e.target.value)}>
+                    <option value="all">Tous les formats</option>
+                    <option value="images">Images</option>
+                    <option value="pdf">PDF</option>
+                </select>
+                <select id="sort" value={sortOption} onChange={(e) => setSortOption(e.target.value)}>
+                    <option value="name">Nom</option>
+                    <option value="size">Taille</option>
+                    <option value="date">Date de téléchargement</option>
+                </select>
+            </div>
+
+            <div className="file-list">
+                {sortedAndFilteredFiles.length > 0 ? (
+                    sortedAndFilteredFiles.map((file, index) => {
+                        const uniqueKey = file.id || index;  // Utiliser l'ID du fichier comme clé unique
                         return (
-                            <li key={uniqueKey} className="file-item">
+                            <div key={uniqueKey} className="file-card">
                                 <div className="file-info">
-                                    <strong>{file.name}</strong> - {(file.size / 1024 / 1024).toFixed(2)} Mo
-                                    <p>Date de téléchargement : {new Date(file.uploadDate).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}</p>
+                                    <h3 className="file-name">{file.name}</h3>
+                                    <p className="file-size">Taille: {(file.size / 1024 / 1024).toFixed(2)} Mo</p>
+                                    <p className="file-date">Date de téléchargement : {new Date(file.uploadDate).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}</p>
                                 </div>
 
                                 <div className="file-preview">
-                                    {isImageFile(file.name) ? (
-                                        <img src={file.url} alt={file.name} className="file-image" />
-                                    ) : isPdfFile(file.name) ? (
-                                        <a href={file.url} target="_blank" rel="noopener noreferrer" className="file-view-btn">Visualiser le PDF</a>
-                                    ) : (
-                                        <a href={file.url} target="_blank" rel="noopener noreferrer" className="file-view-btn">Télécharger le fichier</a>
-                                    )}
+                                    {getFilePreview(file)}
                                 </div>
 
-                                <button className="delete-btn" onClick={() => openConfirmModal(file.name)}>Supprimer</button>
-                            </li>
+                                {/* Passer l'ID du fichier au lieu du nom */}
+                                <button className="delete-btn" onClick={() => openConfirmModal(file.id)}>
+                                    <i className="fa fa-trash"></i> Supprimer
+                                </button>
+                            </div>
                         );
                     })
                 ) : (
-                    <p>Aucun fichier disponible.</p>
+                    <p className="no-files">Aucun fichier disponible.</p>
                 )}
-            </ul>
+            </div>
 
             {/* Pagination */}
             {totalPages > 1 && (
                 <div className="pagination">
+                    <button
+                        className="pagination-btn"
+                        onClick={() => setPage(page - 1)}
+                        disabled={page === 1}
+                    >
+                        Précédent
+                    </button>
                     {Array.from({ length: totalPages }, (_, index) => (
                         <button
                             key={index}
@@ -108,6 +193,13 @@ const FileList = () => {
                             {index + 1}
                         </button>
                     ))}
+                    <button
+                        className="pagination-btn"
+                        onClick={() => setPage(page + 1)}
+                        disabled={page === totalPages}
+                    >
+                        Suivant
+                    </button>
                 </div>
             )}
 
