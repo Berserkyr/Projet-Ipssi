@@ -10,6 +10,9 @@ const FileList = () => {
     const [totalPages, setTotalPages] = useState(1);  // Nombre total de pages
     const [showModal, setShowModal] = useState(false); // État pour la modal de confirmation
     const [fileToDelete, setFileToDelete] = useState(null); // Stocker le fichier à supprimer
+    const [sortOption, setSortOption] = useState('name'); // Option de tri
+    const [searchTerm, setSearchTerm] = useState(''); // Terme de recherche pour les fichiers
+    const [fileTypeFilter, setFileTypeFilter] = useState('all'); // Filtre pour le type de fichier
 
     // Fonction pour récupérer les fichiers - Déplacée en dehors de useEffect
     const fetchFiles = async () => {
@@ -45,7 +48,6 @@ const FileList = () => {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
             });
-            // Mettre à jour la liste des fichiers après la suppression
             setFileToDelete(null); // Réinitialiser l'état du fichier à supprimer
             fetchFiles(); // Rafraîchir la liste des fichiers après la suppression
             setShowModal(false); // Fermer la modal après suppression
@@ -63,6 +65,7 @@ const FileList = () => {
     const isImageFile = (fileName) => /\.(jpeg|jpg|png|gif)$/i.test(fileName);
     const isPdfFile = (fileName) => /\.pdf$/i.test(fileName);
 
+    // Fonction pour obtenir la prévisualisation d'un fichier
     const getFilePreview = (file) => {
         if (isImageFile(file.name)) {
             return <img src={file.url} alt={file.name} className="file-image" />;
@@ -81,14 +84,70 @@ const FileList = () => {
         }
     };
 
+// Fonction pour trier les fichiers
+const sortFiles = (files, sortOption, sortOrder) => {
+    return [...files].sort((a, b) => {
+        let comparison = 0;
+        switch (sortOption) {
+            case 'name':
+                comparison = a.name.localeCompare(b.name);
+                break;
+            case 'size':
+                comparison = a.size - b.size;
+                break;
+            case 'date':
+                comparison = new Date(a.uploadDate) - new Date(b.uploadDate);
+                break;
+            default:
+                return 0;
+        }
+        return sortOrder === 'asc' ? comparison : -comparison;
+    });
+};
+
+
+    // Fonction pour filtrer les fichiers en fonction du terme de recherche et du type de fichier
+    const filterFiles = (files) => {
+        return files.filter((file) => {
+            const matchesSearchTerm = file.name.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesFileType = fileTypeFilter === 'all' ||
+                (fileTypeFilter === 'images' && isImageFile(file.name)) ||
+                (fileTypeFilter === 'pdf' && isPdfFile(file.name));
+            return matchesSearchTerm && matchesFileType;
+        });
+    };
+
+    // Appliquer tri et filtres aux fichiers
+    const sortedAndFilteredFiles = sortFiles(filterFiles(files), sortOption);
+
     return (
         <div className="file-list-container">
             <h2 className="file-list-title">Mes Fichiers</h2>
             {error && <p className="error-message">{error}</p>}
 
+            {/* Menu de recherche et de tri */}
+            <div className="file-controls">
+                <input
+                    type="text"
+                    placeholder="Rechercher par nom"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <select value={fileTypeFilter} onChange={(e) => setFileTypeFilter(e.target.value)}>
+                    <option value="all">Tous les formats</option>
+                    <option value="images">Images</option>
+                    <option value="pdf">PDF</option>
+                </select>
+                <select id="sort" value={sortOption} onChange={(e) => setSortOption(e.target.value)}>
+                    <option value="name">Nom</option>
+                    <option value="size">Taille</option>
+                    <option value="date">Date de téléchargement</option>
+                </select>
+            </div>
+
             <div className="file-list">
-                {files.length > 0 ? (
-                    files.map((file, index) => {
+                {sortedAndFilteredFiles.length > 0 ? (
+                    sortedAndFilteredFiles.map((file, index) => {
                         const uniqueKey = file.id || index;  // Utiliser l'ID du fichier comme clé unique
                         return (
                             <div key={uniqueKey} className="file-card">
