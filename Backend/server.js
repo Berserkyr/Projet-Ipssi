@@ -13,12 +13,12 @@ const paypal = require('paypal-rest-sdk');
 const nodemailer = require('nodemailer');
 const { User, Invoice } = require('./models');
 const File = require('./models/File');
-const fileRoutes = require('./routes/fileRoutes');
+//const fileRoutes = require('./routes/fileRoutes');
 
 // Importer les routes
 const userRoutes = require('./routes/userRoutes');  // Chemin vers les routes utilisateur
 const adminRoutes = require('./routes/adminRoutes'); // Chemin vers les routes admin
-app.use('/api/files', fileRoutes);
+//app.use('/api/files', fileRoutes);
 
 //Config Paypal
 paypal.configure({
@@ -67,6 +67,7 @@ app.use('/api', adminRoutes);
 
 // Route pour gérer l'inscription et rediriger vers PayPal
 
+
 app.post('/api/register', async (req, res) => {
     const { email, password, firstName, lastName, address } = req.body;
 
@@ -80,7 +81,6 @@ app.post('/api/register', async (req, res) => {
         // Hasher le mot de passe
         const hashedPassword = bcrypt.hashSync(password, 10);
 
-        // Créer un nouvel utilisateur avec 20 Go de stockage
         const newUser = await User.create({
             Nom: firstName,
             Prenom: lastName,
@@ -90,9 +90,25 @@ app.post('/api/register', async (req, res) => {
             Capacite_stockage: 20  // Ajouter 20 Go de stockage à l'inscription
         });
 
-        // Répondre avec un message de succès et les informations de l'utilisateur
+        const userMailOptions = {
+            from: process.env.MAIL,
+            to: newUser.Email,
+            subject: 'Confirmation d\'inscription',
+            text: `Bienvenue ${newUser.Prenom} ${newUser.Nom}, votre compte a été créé avec succès et vous disposez de 20 Go de stockage.`
+        };
+        await transporter.sendMail(userMailOptions);
+
+        const adminMailOptions = {
+            from: process.env.MAIL,
+            to: process.env.MAIL,  
+            subject: 'Nouvelle inscription utilisateur',
+            text: `Un nouvel utilisateur s'est inscrit : ${newUser.Email} (Nom : ${newUser.Prenom} ${newUser.Nom}, Adresse : ${newUser.Adresse}). Il dispose de 20 Go de stockage.`
+        };
+        await transporter.sendMail(adminMailOptions);
+
+
         res.status(201).json({
-            message: 'Inscription réussie avec 20 Go de stockage ajoutés.',
+            message: 'Inscription réussie avec 20 Go de stockage ajoutés. Un email de confirmation a été envoyé.',
             user: newUser
         });
 
@@ -253,7 +269,7 @@ app.delete('/api/files/:fileName', verifyToken, (req, res) => {
 });
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.use('/api/files', fileRoutes);
+//app.use('/api/files', fileRoutes);
 
 // ----------------------------
 // GESTION DES ERREURS
@@ -382,9 +398,13 @@ app.get('/api/success', async (req, res) => {
                 if (!user) {
                     return res.status(404).json({ message: 'Utilisateur non trouvé.' });
                 }
+
+                // Mise à jour de la capacité de stockage
                 user.Capacite_stockage += 20;
                 await user.save();
-                await Invoice.create({
+
+                // Création de la facture
+                const invoice = await Invoice.create({
                     userId: userId,
                     clientType: 'particulier', 
                     date: new Date(),
@@ -395,7 +415,25 @@ app.get('/api/success', async (req, res) => {
                     siret: user.siret || null,             
                     vatNumber: user.vatNumber || null      
                 });
-    
+
+                // Envoi de l'email à l'utilisateur
+                const userMailOptions = {
+                    from: process.env.MAIL,
+                    to: user.Email,
+                    subject: 'Confirmation d\'achat - Espace de stockage',
+                    text: `Merci ${user.Prenom} ${user.Nom}, votre achat de 20 Go d'espace de stockage a été validé avec succès.`
+                };
+                await transporter.sendMail(userMailOptions);
+
+                // Envoi de l'email à l'admin
+                const adminMailOptions = {
+                    from: process.env.MAIL,
+                    to: process.env.MAIL,  // Envoi à l'admin
+                    subject: 'Nouvel achat d\'espace de stockage',
+                    text: `L'utilisateur ${user.Email} (ID: ${userId}) a acheté 20 Go d'espace de stockage pour un montant de 24.00 EUR.`
+                };
+                await transporter.sendMail(adminMailOptions);
+
                 // Fermer l'onglet avec un script JS
                 res.send(`
                     <html>
@@ -414,6 +452,7 @@ app.get('/api/success', async (req, res) => {
         }
     });    
 });
+
 
 
 //
