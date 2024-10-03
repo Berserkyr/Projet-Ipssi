@@ -3,16 +3,17 @@
     max-width: 800px;
     margin: 50px auto;
     padding: 30px;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff; /* Fond blanc pour contraster avec le dégradé */
+    border-radius: 15px; /* Coin arrondi, cohérent avec le dashboard */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Ombre similaire au style général */
     line-height: 1.8; /* Améliore la lisibilité */
-    color: #333;
-    transition: box-shadow 0.3s ease; /* Animation douce pour l'ombre */
+    color: #333; /* Texte principal en gris foncé */
+    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Animation douce pour l'ombre */
 }
 
 .mentions-legales:hover {
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15); /* Légère augmentation de l'ombre au survol */
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15); /* Légère augmentation de l'ombre au survol */
+    transform: translateY(-3px); /* Légère translation au survol pour un effet dynamique */
 }
 
 /* Titre principal */
@@ -20,8 +21,9 @@
     text-align: center;
     font-size: 2.5rem;
     margin-bottom: 25px;
-    color: #007bff;
+    color: #1e3c72; /* Couleur bleue cohérente avec le header et footer */
     font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Légère ombre pour le titre */
 }
 
 /* Sections */
@@ -33,32 +35,33 @@
 .mentions-legales h2 {
     font-size: 2rem;
     margin-bottom: 15px;
-    color: #0056b3;
+    color: #2a5298; /* Bleu plus doux, cohérent avec le dégradé du header */
     font-weight: 600;
 }
 
 /* Paragraphes */
 .mentions-legales p {
     font-size: 1.1rem;
-    color: #555;
+    color: #555; /* Gris pour améliorer la lisibilité */
     margin-bottom: 20px; /* Ajout de marges pour une meilleure lisibilité */
 }
 
 /* Textes en gras */
 .mentions-legales strong {
-    color: #000;
+    color: #1e3c72; /* Mettre en valeur avec une couleur forte mais cohérente */
     font-weight: bold;
 }
 
 /* Liens */
 .mentions-legales a {
-    color: #007bff;
+    color: #1e3c72; /* Couleur des liens en cohérence avec les boutons et header */
     text-decoration: none;
+    font-weight: bold;
     transition: color 0.3s ease, text-decoration 0.3s ease; /* Transition fluide sur le lien */
 }
 
 .mentions-legales a:hover {
-    color: #0056b3;
+    color: #2a5298; /* Couleur plus claire lors du survol pour indiquer l'interactivité */
     text-decoration: underline;
 }
 
