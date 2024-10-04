@@ -78,45 +78,138 @@ app.post('/api/register', async (req, res) => {
             return res.status(400).json({ message: 'Utilisateur déjà inscrit.' });
         }
 
-        // Hasher le mot de passe
+
         const hashedPassword = bcrypt.hashSync(password, 10);
 
-        const newUser = await User.create({
-            Nom: firstName,
-            Prenom: lastName,
-            Email: email,
-            Mot_de_passe: hashedPassword,
-            Adresse: address,
-            Capacite_stockage: 20  // Ajouter 20 Go de stockage à l'inscription
-        });
+        const montantHT = 20.00;
+        const montantTTC = montantHT * 1.20;
 
-        const userMailOptions = {
-            from: process.env.MAIL,
-            to: newUser.Email,
-            subject: 'Confirmation d\'inscription',
-            text: `Bienvenue ${newUser.Prenom} ${newUser.Nom}, votre compte a été créé avec succès et vous disposez de 20 Go de stockage.`
+        const create_payment_json = {
+            "intent": "sale",
+            "payer": {
+                "payment_method": "paypal"
+            },
+            "redirect_urls": {
+                "return_url": `http://localhost:5000/api/register-success?email=${encodeURIComponent(email)}&password=${encodeURIComponent(hashedPassword)}&firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}&address=${encodeURIComponent(address)}`,
+                "cancel_url": "http://localhost:3000/cancel"
+            },
+            "transactions": [{
+                "item_list": {
+                    "items": [{
+                        "name": "Inscription avec 20 Go de stockage",
+                        "sku": "001",
+                        "price": montantTTC.toFixed(2),
+                        "currency": "EUR",
+                        "quantity": 1
+                    }]
+                },
+                "amount": {
+                    "currency": "EUR",
+                    "total": montantTTC.toFixed(2)
+                },
+                "description": "Paiement pour l'inscription avec 20 Go de stockage"
+            }]
         };
-        await transporter.sendMail(userMailOptions);
 
-        const adminMailOptions = {
-            from: process.env.MAIL,
-            to: process.env.MAIL,  
-            subject: 'Nouvelle inscription utilisateur',
-            text: `Un nouvel utilisateur s'est inscrit : ${newUser.Email} (Nom : ${newUser.Prenom} ${newUser.Nom}, Adresse : ${newUser.Adresse}). Il dispose de 20 Go de stockage.`
-        };
-        await transporter.sendMail(adminMailOptions);
-
-
-        res.status(201).json({
-            message: 'Inscription réussie avec 20 Go de stockage ajoutés. Un email de confirmation a été envoyé.',
-            user: newUser
+        paypal.payment.create(create_payment_json, function (error, payment) {
+            if (error) {
+                throw error;
+            } else {
+                for (let i = 0; i < payment.links.length; i++) {
+                    if (payment.links[i].rel === 'approval_url') {
+                        return res.json({ redirectUrl: payment.links[i].href });
+                    }
+                }
+            }
         });
-
     } catch (error) {
-        console.error('Erreur lors de l\'inscription :', error);
-        res.status(500).json({ message: 'Erreur lors de l\'inscription.' });
+        console.error('Erreur lors du processus d\'inscription :', error);
+        res.status(500).json({ message: 'Erreur lors du processus d\'inscription.' });
     }
 });
+
+// Route de succès pour créer l'utilisateur après paiement
+app.get('/api/register-success', async (req, res) => {
+    const payerId = req.query.PayerID;
+    const paymentId = req.query.paymentId;
+    const { email, password, firstName, lastName, address } = req.query;
+
+    const execute_payment_json = {
+        "payer_id": payerId,
+        "transactions": [{
+            "amount": {
+                "currency": "EUR",
+                "total": "24.00" // Montant total TTC
+            }
+        }]
+    };
+
+    paypal.payment.execute(paymentId, execute_payment_json, async function (error, payment) {
+        if (error) {
+            console.log(error.response);
+            throw error;
+        } else {
+            try {
+                // Créer l'utilisateur après validation du paiement
+                const newUser = await User.create({
+                    Nom: firstName,
+                    Prenom: lastName,
+                    Email: email,
+                    Mot_de_passe: password,
+                    Adresse: address,
+                    Capacite_stockage: 20 // Ajouter 20 Go de stockage à l'inscription
+                });
+                console.log(newUser)
+                const invoice = await Invoice.create({
+                    userId: newUser.ID_Utilisateur,
+                    clientType: 'particulier', 
+                    date: new Date(),
+                    amount: 24.00, 
+                    description: 'Achat de 20 Go d\'espace de stockage',
+                    status: 'paid', 
+                    companyName: newUser.companyName || null,  
+                    siret: newUser.siret || null,              
+                    vatNumber: newUser.vatNumber || null      
+                });
+
+                // Envoi d'emails après création de l'utilisateur
+                const userMailOptions = {
+                    from: process.env.MAIL,
+                    to: newUser.Email,
+                    subject: 'Confirmation d\'inscription',
+                    text: `Bienvenue ${newUser.Prenom} ${newUser.Nom}, votre compte a été créé avec succès et vous disposez de 20 Go de stockage.`
+                };
+                await transporter.sendMail(userMailOptions);
+
+                const adminMailOptions = {
+                    from: process.env.MAIL,
+                    to: process.env.MAIL,
+                    subject: 'Nouvelle inscription utilisateur',
+                    text: `Un nouvel utilisateur s'est inscrit : ${newUser.Email} (Nom : ${newUser.Prenom} ${newUser.Nom}, Adresse : ${newUser.Adresse}). Il dispose de 20 Go de stockage.`
+                };
+                await transporter.sendMail(adminMailOptions);
+
+                res.send(`
+                    <html>
+                        <body>
+                            <script>
+                                window.location.href = 'http://localhost:3000/login ';  // Redirection vers la page de login
+                            </script>
+                            <p>Inscription réussie et paiement validé. Vous allez être redirigé vers la page de connexion.</p>
+                        </body>
+                    </html>
+                `);
+                
+            } catch (err) {
+                console.error('Erreur lors de la création de l\'utilisateur après paiement :', err);
+                res.status(500).json({ message: 'Erreur lors de la création de l\'utilisateur après paiement.' });
+            }
+        }
+    });
+});
+
+
+
 
 
 
@@ -557,58 +650,107 @@ app.get('/api/storage-usage', verifyToken, async (req, res) => {
 });
 
 
-
 app.post('/api/download-invoice', isAuthenticated, async (req, res) => {
-    const { invoiceId } = req.body; 
+    const { invoiceId } = req.body;
     console.log("Corps de la requête reçu:", req.body);
-    console.log("Invoice ID reçu:", req.body.invoiceId);
-    
     if (!invoiceId) {
         console.log("Erreur: ID de facture manquant.");
         return res.status(400).json({ message: 'ID de facture manquant.' });
     }
+ 
     try {
         const invoice = await Invoice.findByPk(invoiceId, {
-            include: [{ model: User, as: 'user' }]  
+            include: [{ model: User, as: 'user' }]
         });
-
+ 
         if (!invoice) {
             console.log("Erreur: Facture non trouvée.");
             return res.status(404).json({ message: 'Facture non trouvée.' });
         }
-        console.log("Génération du PDF pour l'ID de facture:", invoiceId);
-        const user = invoice.user;  // Utilisateur lié à la facture
+ 
+        const user = invoice.user;
         const amountTTC = parseFloat(invoice.amount) || 0;
-        const amountHT = (amountTTC / 1.20).toFixed(2);  // Prix HT (déduit 20%)
-
-        // Gen du pdf
-        const doc = new PDFDocument();
-        const filePath = path.join(__dirname, 'factures', `facture_${invoice.id}.pdf`);
-
+        const amountHT = (amountTTC / 1.20).toFixed(2);
+ 
+        const doc = new PDFDocument({
+            size: 'A4',
+            margins: {
+                top: 50,
+                bottom: 50,
+                left: 72,
+                right: 72
+            }
+        });
+ 
         res.setHeader('Content-Disposition', `attachment; filename=facture_${invoice.id}.pdf`);
         res.setHeader('Content-Type', 'application/pdf');
-
         doc.pipe(res);
-        doc.fontSize(25).text('Facture', { align: 'center' });
-        doc.moveDown();
-        doc.fontSize(14).text(`Nom du client : ${user.Nom} ${user.Prenom}`);
-        doc.text(`Date d'achat : ${invoice.date.toISOString().split('T')[0]}`);
-        doc.text(`Prix payé TTC : ${amountTTC.toFixed(2)} €`);
-        doc.text(`Prix payé HT : ${amountHT} €`);
-        doc.text(`Description : ${invoice.description}`);
-        doc.text(`Statut : ${invoice.status}`);
-        doc.moveDown();
+ 
+        doc
+            .image(path.join(__dirname, 'assets', 'logo.png'), 50, 45, { width: 100 }) 
+            .fontSize(20)
+            .font('Helvetica-Bold')
+            .text('ArchiCloud', 200, 50, { align: 'right' })
+            .fontSize(10)
+            .text('456 Avenue des Champs-Élysées', 200, 75, { align: 'right' })
+            .text('75008 Paris, France', 200, 90, { align: 'right' })
+            .text('Téléphone : +33 1 23 45 67 89', 200, 105, { align: 'right' })
+            .text('Email : contact@archicloud.com', 200, 120, { align: 'right' })
+            .text('SIRET : 123 456 789 00010', 200, 135, { align: 'right' });
+ 
+        doc.moveTo(50, 150).lineTo(550, 150).stroke();
+ 
+        doc
+            .fontSize(16)
+            .text('Facture', 50, 170, { align: 'center' })
+            .moveDown(1.5);
+
+        doc
+            .fontSize(12)
+            .font('Helvetica-Bold')
+            .text('Informations du Client', 50, 220)
+            .font('Helvetica')
+            .text(`Nom: ${user.Nom} ${user.Prenom}`, { indent: 20 })
+            .text(`Email: ${user.Email}`, { indent: 20 })
+            .text(`Adresse: ${user.Adresse}`, { indent: 20 })
+            .moveDown(1.5);
+
+        doc
+            .font('Helvetica-Bold')
+            .text('Détails de la Facture', 50)
+            .font('Helvetica')
+            .text(`Numéro de Facture: ${invoice.id}`, { indent: 20 })
+            .text(`Date: ${invoice.date.toISOString().split('T')[0]}`, { indent: 20 })
+            .text(`Statut: ${invoice.status}`, { indent: 20 })
+            .moveDown(1.5);
+ 
+        doc
+            .font('Helvetica-Bold')
+            .text('Montant de la Facture', 50)
+            .font('Helvetica')
+            .text(`Montant HT: ${amountHT} €`, { indent: 20 })
+            .text(`Montant TTC: ${amountTTC.toFixed(2)} €`, { indent: 20 })
+            .text(`Description: ${invoice.description}`, { indent: 20 })
+            .moveDown(1.5);
 
         if (invoice.companyName) {
-            doc.text(`Nom de la compagnie : ${invoice.companyName}`);
+            doc.text(`Nom de la Compagnie: ${invoice.companyName}`, { indent: 20 });
         }
         if (invoice.siret) {
-            doc.text(`SIRET : ${invoice.siret}`);
+            doc.text(`SIRET: ${invoice.siret}`, { indent: 20 });
         }
         if (invoice.vatNumber) {
-            doc.text(`Numéro de TVA : ${invoice.vatNumber}`);
+            doc.text(`Numéro de TVA: ${invoice.vatNumber}`, { indent: 20 });
         }
+ 
+        doc
+            .moveDown(2)
+            .fontSize(10)
+            .text('Merci pour votre achat.', { align: 'center' })
+            .text('Pour toute question concernant cette facture, veuillez nous contacter à l\'adresse ci-dessus.', { align: 'center' });
+ 
         doc.end();
+ 
     } catch (error) {
         console.error('Erreur lors de la génération du PDF :', error);
         res.status(500).json({ message: 'Erreur lors de la génération du PDF.' });

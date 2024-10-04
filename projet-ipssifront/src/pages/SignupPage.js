@@ -1,40 +1,41 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';  // Utiliser useNavigate pour rediriger après l'inscription
+import { useNavigate } from 'react-router-dom';
 
 const SignupPage = () => {
-    const [firstName, setFirstName] = useState('');  // Ajouter l'état pour firstName
-    const [lastName, setLastName] = useState('');    // Ajouter l'état pour lastName
-    const [address, setAddress] = useState('');      // Ajouter l'état pour address
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [address, setAddress] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [isProcessing, setIsProcessing] = useState(false);  // Pour le traitement en cours
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsProcessing(true);
         try {
-            const response = await axios.post('http://localhost:5000/api/register', { 
-                firstName, 
-                lastName, 
-                address, 
-                email, 
-                password 
+            const response = await axios.post('http://localhost:5000/api/register', {
+                firstName,
+                lastName,
+                address,
+                email,
+                password
             });
 
-            // Vérifier le statut de la réponse
-            if (response.status === 201) {  // Si le statut est 201 (inscription réussie)
-                setSuccess('Inscription réussie, vous pouvez vous connecter.');
-                setError('');
-                // Rediriger vers la page de connexion après 2 secondes
-                setTimeout(() => navigate('/login'), 2000);
+            // Si le paiement PayPal est initié, rediriger l'utilisateur
+            if (response.data.redirectUrl) {
+                window.location.href = response.data.redirectUrl;
             } else {
-                setError('Erreur lors de l\'inscription.');
+                setError('Erreur lors de la redirection vers PayPal.');
+                setIsProcessing(false);
             }
         } catch (err) {
             setError(err.response?.data?.message || 'Erreur lors de l\'inscription.');
             setSuccess('');
+            setIsProcessing(false);
         }
     };
 
@@ -88,8 +89,11 @@ const SignupPage = () => {
                     />
                 </div>
                 {error && <p style={{ color: 'red' }}>{error}</p>}
-                {success && <p style={{ color: 'green' }}>{success}</p>}
-                <button type="submit">S'inscrire</button>
+                {isProcessing ? (
+                    <button disabled>Traitement...</button>
+                ) : (
+                    <button type="submit">S'inscrire et payer</button>
+                )}
             </form>
         </div>
     );
